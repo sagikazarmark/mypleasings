@@ -18,3 +18,8 @@ openapi_library(
     },
     strip = ["{Dockerfile,go.*,README.md,main.go,go/api*.go,go/logger.go,go/routers.go}"],
 )
+
+openapi_validate(
+    name = "validate",
+    spec = ":spec",
+)

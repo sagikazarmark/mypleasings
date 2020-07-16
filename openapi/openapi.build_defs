@@ -34,7 +34,7 @@ def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_
     if strip:
         cmd += [f"rm -rf $OUT/{s}" for s in strip]
 
-    return build_rule(
+    return genrule(
         name = name,
         srcs = [spec],
         deps = deps,
@@ -44,4 +44,24 @@ def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_
         sandbox = False,
         visibility = visibility,
         test_only = test_only,
+    )
+
+def openapi_validate(name:str, spec:str, visibility:list=None):
+    """Validates an OpenAPI specification.
+
+    It uses the unofficial OpenAPI Generator under the hood: https://github.com/OpenAPITools/openapi-generator
+
+    Args:
+      name (str): Name of the rule.
+      spec (str): OpenAPI specification.
+      visibility (list): Visibility specification
+    """
+
+    return gentest(
+        name = name,
+        data = [spec],
+        test_cmd = f'docker run --rm -v "$TMP_DIR/$DATA:/build/$DATA" {CONFIG.OPENAPI_GENERATOR_IMAGE}:{CONFIG.OPENAPI_GENERATOR_VERSION} validate -i "/build/$DATA" --recommend',
+        sandbox = False,
+        no_test_output = True,
+        visibility = visibility,
     )

@@ -16,10 +16,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build
-        run: ./pleasew build -p //...
+        run: ./pleasew build -p //test/...
+
+      - name: Test
+        run: ./pleasew test -p --log_file=plz-out/log/test.log //test/...
 
       - name: Save please log output
         uses: actions/upload-artifact@v1
         with:
           name: plz-log
-          path: plz-out/log/build.log
+          path: plz-out/log
