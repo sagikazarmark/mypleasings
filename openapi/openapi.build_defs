@@ -1,7 +1,6 @@
 CONFIG.setdefault("OPENAPI_GENERATOR_IMAGE", "openapitools/openapi-generator-cli")
 CONFIG.setdefault("OPENAPI_GENERATOR_VERSION", "v4.3.1")
 
-# TODO: add support for config file
 def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_properties:dict={}, deps:list=[], visibility:list=None, test_only:bool&testonly=False, strip:list=None):
     """Generates client or server libraries and stubs from an OpenAPI specification.
 
