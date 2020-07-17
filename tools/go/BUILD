@@ -15,3 +15,19 @@ genrule(
     cmd = '"$TOOL" x "$SRCS" golangci-lint -o tmp && mv $(find tmp -name "golangci-lint") "$OUT"',
     tools = [CONFIG.JARCAT_TOOL],
 )
+
+CONFIG.setdefault("GOTESTSUM_VERSION", "0.5.1")
+
+genrule(
+    name = "gotestsum",
+    srcs = [remote_file(
+        name = "gotestsum",
+        _tag = "download",
+        url = f"https://github.com/gotestyourself/gotestsum/releases/download/v{CONFIG.GOTESTSUM_VERSION}/gotestsum_{CONFIG.GOTESTSUM_VERSION}_{CONFIG.HOSTOS}_{CONFIG.HOSTARCH}.tar.gz",
+        out = f"gotestsum-{CONFIG.GOTESTSUM_VERSION}.tar.gz",
+    )],
+    outs = ["gotestsum"],
+    binary = True,
+    cmd = '"$TOOL" x "$SRCS" gotestsum -o tmp && mv $(find tmp -name "gotestsum") "$OUT"',
+    tools = [CONFIG.JARCAT_TOOL],
+)
