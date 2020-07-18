@@ -31,3 +31,19 @@ genrule(
     cmd = '"$TOOL" x "$SRCS" gotestsum -o tmp && mv $(find tmp -name "gotestsum") "$OUT"',
     tools = [CONFIG.JARCAT_TOOL],
 )
+
+CONFIG.setdefault("MGA_VERSION", "0.2.1")
+
+genrule(
+    name = "mga",
+    srcs = [remote_file(
+        name = "mga",
+        _tag = "download",
+        url = f"https://github.com/sagikazarmark/mga/releases/download/v{CONFIG.MGA_VERSION}/mga_{CONFIG.HOSTOS}_{CONFIG.HOSTARCH}.tar.gz",
+        out = f"mga-{CONFIG.MGA_VERSION}.tar.gz",
+    )],
+    outs = ["mga"],
+    binary = True,
+    cmd = '"$TOOL" x "$SRCS" mga -o tmp && mv $(find tmp -name "mga") "$OUT"',
+    tools = [CONFIG.JARCAT_TOOL],
+)
