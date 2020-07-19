@@ -1,4 +1,4 @@
-_GO_ENV_VARS = ["GOCACHE", "GODEBUG", "GOENV", "GOFLAGS", "GOINSECURE", "GOPATH", "GOPROXY", "GOPRIVATE", "GONOPROXY", "GONOSUMDB", "GOROOT", "GOSUMDB"]
+_GO_ENV_VARS = ["GOCACHE", "GODEBUG", "GOENV", "GOFLAGS", "GOINSECURE", "GOPROXY", "GOPRIVATE", "GONOPROXY", "GONOSUMDB", "GOSUMDB"]
 
 def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
              test_only:bool&testonly=False, definitions:str|list|dict=None, stamp:bool=False,
@@ -70,6 +70,9 @@ def _go_build_cmds(definitions:str|list|dict=None, tags:list=[], trimpath:bool):
 
     if CONFIG.GO_HOME:
         prefix_cmds += [f'export HOME="{CONFIG.GO_HOME}"']
+
+    if CONFIG.GOPATH:
+        prefix_cmds += [f'export GOPATH="{CONFIG.GOPATH}"']
 
     prefix_cmd = " && ".join(prefix_cmds)
 
