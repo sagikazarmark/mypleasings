@@ -61,8 +61,8 @@ def _go_build_cmds(definitions:str|list|dict=None, tags:list=[], trimpath:bool):
     defs = ' '.join([f'-X "{linkerdef}"' for linkerdef in linkerdefs])
 
     cmds = {
-        'dbg': f'cd "$(pwd | sed "s/plz-out\/.*//")" && "$TOOLS_GO" {flags} -ldflags "{defs}" -o "$OUT" "./$PKG_DIR"',
-        'opt': f'cd "$(pwd | sed "s/plz-out\/.*//")" && "$TOOLS_GO" {flags} -ldflags "-s -w {defs}" -o "$OUT" "./$PKG_DIR"',
+        'dbg': f'cd "$(pwd | sed "s/plz-out\/.*//")" && "$TOOLS_GO" {flags} -ldflags "{defs}" -o "$OUTS" "./$PKG_DIR"',
+        'opt': f'cd "$(pwd | sed "s/plz-out\/.*//")" && "$TOOLS_GO" {flags} -ldflags "-s -w {defs}" -o "$OUTS" "./$PKG_DIR"',
     }
 
     return cmds, {
