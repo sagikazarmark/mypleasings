@@ -41,13 +41,15 @@ def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
         stamp = stamp,
     )
 
+CONFIG.setdefault("GO_HOME", None)
+
 def _go_build_cmds(definitions:str|list|dict=None, tags:list=[], trimpath:bool):
     """Returns the commands to run for compiling a Go binary."""
 
-    flags = 'build'
+    flags = "build"
 
     if trimpath:
-        flags += ' -trimpath'
+        flags += " -trimpath"
 
     if len(tags) > 0:
         flags += ' -tags "%s"' % ','.join(tags)
@@ -62,11 +64,18 @@ def _go_build_cmds(definitions:str|list|dict=None, tags:list=[], trimpath:bool):
     elif isinstance(definitions, dict):
         linkerdefs = [k if v is None else f'{k}={v}' for k, v in sorted(definitions.items())]
 
-    defs = ' '.join([f'-X "{linkerdef}"' for linkerdef in linkerdefs])
+    defs = " ".join([f'-X "{linkerdef}"' for linkerdef in linkerdefs])
+
+    prefix_cmds = ['cd "$(pwd | sed "s/plz-out\/.*//")"']
+
+    if CONFIG.GO_HOME:
+        prefix_cmds += [f'export HOME="{CONFIG.GO_HOME}"']
+
+    prefix_cmd = " && ".join(prefix_cmds)
 
     cmds = {
-        'dbg': f'cd "$(pwd | sed "s/plz-out\/.*//")" && "$TOOLS_GO" {flags} -ldflags "{defs}" -o "$OUTS" "./$PKG_DIR"',
-        'opt': f'cd "$(pwd | sed "s/plz-out\/.*//")" && "$TOOLS_GO" {flags} -ldflags "-s -w {defs}" -o "$OUTS" "./$PKG_DIR"',
+        'dbg': f'{prefix_cmd} && "$TOOLS_GO" {flags} -ldflags "{defs}" -o "$OUT" "./$PKG_DIR"',
+        'opt': f'{prefix_cmd} && "$TOOLS_GO" {flags} -ldflags "-s -w {defs}" -o "$OUT" "./$PKG_DIR"',
     }
 
     return cmds, {
