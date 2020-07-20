@@ -54,6 +54,9 @@ def _go_build_cmds(definitions:str|list|dict=None, tags:list=[], trimpath:bool):
     if len(tags) > 0:
         flags += ' -tags "%s"' % ','.join(tags)
 
+    if CONFIG.GOPATH.startswith("$TMP_DIR"): # When GOPATH is within the build directory, mod cache should be writable (best-effort)
+        flags += " -modcacherw"
+
     linkerdefs = []
     if definitions is None:
         pass
