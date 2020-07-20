@@ -46,7 +46,7 @@ CONFIG.setdefault("GO_HOME", None)
 def _go_build_cmds(definitions:str|list|dict=None, tags:list=[], trimpath:bool):
     """Returns the commands to run for compiling a Go binary."""
 
-    flags = "build"
+    flags = "build -mod=readonly"
 
     if trimpath:
         flags += " -trimpath"
