@@ -69,7 +69,7 @@ def _go_build_cmds(definitions:str|list|dict=None, tags:list=[], trimpath:bool):
 
     defs = " ".join([f'-X "{linkerdef}"' for linkerdef in linkerdefs])
 
-    prefix_cmds = ['cd "$(pwd | sed "s/plz-out\/.*//")"']
+    prefix_cmds = ['cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR"']
 
     if CONFIG.GO_HOME:
         prefix_cmds += [f'export HOME="{CONFIG.GO_HOME}"']
@@ -80,8 +80,8 @@ def _go_build_cmds(definitions:str|list|dict=None, tags:list=[], trimpath:bool):
     prefix_cmd = " && ".join(prefix_cmds)
 
     cmds = {
-        'dbg': f'{prefix_cmd} && "$TOOLS_GO" {flags} -ldflags "{defs}" -o "$OUT" "./$PKG_DIR"',
-        'opt': f'{prefix_cmd} && "$TOOLS_GO" {flags} -ldflags "-s -w {defs}" -o "$OUT" "./$PKG_DIR"',
+        'dbg': f'{prefix_cmd} && "$TOOLS_GO" {flags} -ldflags "{defs}" -o "$OUT"',
+        'opt': f'{prefix_cmd} && "$TOOLS_GO" {flags} -ldflags "-s -w {defs}" -o "$OUT"',
     }
 
     return cmds, {
