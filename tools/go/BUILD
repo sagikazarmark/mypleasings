@@ -1,5 +1,3 @@
-package(default_visibility = ["PUBLIC"])
-
 CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.28.3")
 
 genrule(
@@ -14,6 +12,7 @@ genrule(
     binary = True,
     cmd = '"$TOOL" x "$SRCS" golangci-lint -o tmp && mv $(find tmp -name "golangci-lint") "$OUT"',
     tools = [CONFIG.JARCAT_TOOL],
+    visibility = ["PUBLIC"],
 )
 
 CONFIG.setdefault("GOTESTSUM_VERSION", "0.5.1")
@@ -30,6 +29,7 @@ genrule(
     binary = True,
     cmd = '"$TOOL" x "$SRCS" gotestsum -o tmp && mv $(find tmp -name "gotestsum") "$OUT"',
     tools = [CONFIG.JARCAT_TOOL],
+    visibility = ["PUBLIC"],
 )
 
 CONFIG.setdefault("MGA_VERSION", "0.2.1")
@@ -46,4 +46,5 @@ genrule(
     binary = True,
     cmd = '"$TOOL" x "$SRCS" mga -o tmp && mv $(find tmp -name "mga") "$OUT"',
     tools = [CONFIG.JARCAT_TOOL],
+    visibility = ["PUBLIC"],
 )
