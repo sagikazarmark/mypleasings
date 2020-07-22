@@ -31,3 +31,21 @@ genrule(
     tools = [CONFIG.JARCAT_TOOL],
     visibility = ["PUBLIC"],
 )
+
+CONFIG.setdefault("JQ_VERSION", "1.6")
+
+if CONFIG.HOSTOS == 'linux':
+    _jq_host = CONFIG.HOSTOS
+elif CONFIG.HOSTOS == 'darwin':
+    _jq_host = 'osx'
+
+remote_file(
+    name = 'jq',
+    url = [
+        f"https://github.com/stedolan/jq/releases/download/jq-{CONFIG.JQ_VERSION}/jq-{_jq_host}64",
+        f"https://github.com/stedolan/jq/releases/download/jq-{CONFIG.JQ_VERSION}/jq-{_jq_host}-amd64",
+    ],
+    out = "jq",
+    binary = True,
+    visibility = ["PUBLIC"],
+)
