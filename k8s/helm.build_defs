@@ -1,0 +1,20 @@
+CONFIG.setdefault("HELM_TOOL", "//tools/k8s:helm")
+
+def helm_package(name:str, visibility:list=None):
+    """Packages a Helm chart into a versioned chart archive.
+
+    Args:
+      name (str): Name of the rule.
+      visibility (list): Visibility of the rule.
+    """
+    return genrule(
+        name = name,
+        srcs = glob(["**"], hidden = True),
+        cmd = [
+            "mkdir helm-out",
+            '"$TOOLS_HELM" package --destination helm-out "$PKG_DIR"',
+        ],
+        output_dirs = ["helm-out"],
+        tools = {"helm": [CONFIG.HELM_TOOL]},
+        visibility = visibility,
+    )
