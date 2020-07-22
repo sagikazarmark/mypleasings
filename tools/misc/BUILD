@@ -15,7 +15,7 @@ genrule(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("MIGRATE_VERSION", "4.9.1")
+CONFIG.setdefault("MIGRATE_VERSION", "4.11.0")
 
 genrule(
     name = "migrate",
