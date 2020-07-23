@@ -18,3 +18,19 @@ def helm_package(name:str, visibility:list=None):
         tools = {"helm": [CONFIG.HELM_TOOL]},
         visibility = visibility,
     )
+
+def helm_lint(name:str, visibility:list=None):
+    """Lints a Helm chart.
+
+    Args:
+      name (str): Name of the rule.
+      visibility (list): Visibility of the rule.
+    """
+
+    return gentest(
+        name = name,
+        test_cmd = f'"$(location {CONFIG.HELM_TOOL})" lint "$PKG_DIR" 2>&1',
+        data = glob(["**"], hidden = True) + [CONFIG.HELM_TOOL],
+        visibility = visibility,
+        no_test_output = True,
+    )
