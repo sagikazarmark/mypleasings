@@ -1,0 +1,36 @@
+def download_binary(binary_name:str, url:str|list, name:str=None, hashes:list=[], download_out:str=None, visibility:list=None, test_only:bool&testonly=False):
+    """Compiles a go binary.
+
+    Args:
+      binary_name (str): Name of the binary to download.
+      url (str | list): URL or URLs to fetch.
+                        If multiple are passed then they will be tried in sequence until one succeeds.
+      name (str): Name of the rule. Chosen automatically if not given.
+      hashes (list): List of hashes; the output must match at least one of these.
+      download_out (str): Download artifact name.
+                          When the file being downloaded does not have a unique name,
+                          this argument can be used to pass a unique file name
+                          (eg. with version in it).
+      visibility (list): Visibility of the rule.
+      test_only (bool): If True, is only visible to test rules.
+    """
+
+    name = name or binary_name
+
+    download_rule = remote_file(
+        name = name,
+        _tag = "download",
+        url = url,
+        hashes = hashes,
+        out = download_out,
+    )
+
+    genrule(
+        name = name,
+        srcs = [download_rule],
+        outs = [binary_name],
+        binary = True,
+        cmd = f'"$TOOL" x "$SRCS" {binary_name} -o tmp && mv $(find tmp -name "{binary_name}") "$OUT"',
+        tools = [CONFIG.JARCAT_TOOL],
+        visibility = visibility,
+    )
