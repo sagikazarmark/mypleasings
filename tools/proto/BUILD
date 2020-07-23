@@ -16,7 +16,7 @@ _buf_os = {
 remote_file(
     name = "buf",
     url = f"https://github.com/bufbuild/buf/releases/download/v%s/buf-%s-x86_64" % (CONFIG.BUF_VERSION, _buf_os[CONFIG.HOSTOS]),
-    out = "buf",
+    out = "bin/buf",
     binary = True,
     visibility = ["PUBLIC"],
 )

@@ -1,9 +1,17 @@
 CONFIG.setdefault("LICENSEI_VERSION", "0.2.0")
 
-download_binary(
-    binary_name = "licensei",
-    url = f"https://github.com/goph/licensei/releases/download/v{CONFIG.LICENSEI_VERSION}/licensei_{CONFIG.HOSTOS}_{CONFIG.HOSTARCH}.tar.gz",
-    download_out = f"licensei-{CONFIG.LICENSEI_VERSION}.tar.gz",
+genrule(
+    name = "licensei",
+    srcs = [remote_file(
+        name = "licensei",
+        _tag = "download",
+        url = f"https://github.com/goph/licensei/releases/download/v{CONFIG.LICENSEI_VERSION}/licensei_{CONFIG.HOSTOS}_{CONFIG.HOSTARCH}.tar.gz",
+        out = f"licensei-{CONFIG.LICENSEI_VERSION}.tar.gz",
+    )],
+    outs = ["licensei"],
+    binary = True,
+    cmd = '"$TOOL" x "$SRCS" licensei -o tmp && mv $(find tmp -name "licensei") "$OUT"',
+    tools = [CONFIG.JARCAT_TOOL],
     visibility = ["PUBLIC"],
 )
 
