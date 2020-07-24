@@ -8,6 +8,13 @@ kubectl_binary(
     visibility = ["PUBLIC"],
 )
 
+CONFIG.setdefault("KIND_VERSION", "0.8.1")
+
+kind_binary(
+    name = "kind",
+    version = CONFIG.KIND_VERSION,
+    visibility = ["PUBLIC"],
+)
 
 CONFIG.setdefault("HELM_VERSION", "3.2.4")
 
