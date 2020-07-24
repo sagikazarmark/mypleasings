@@ -1,6 +1,6 @@
 subinclude("//go:tools")
 
-CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.28.3")
+CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.29.0")
 
 golangci_lint_binary(
     name = "golangci-lint",
@@ -8,7 +8,7 @@ golangci_lint_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("GOTESTSUM_VERSION", "0.5.1")
+CONFIG.setdefault("GOTESTSUM_VERSION", "0.5.2")
 
 gotestsum_binary(
     name = "gotestsum",
