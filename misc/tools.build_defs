@@ -85,11 +85,11 @@ def jq_binary(name:str, version:str=None, hashes:list=None, out:str="",
 
     jq_host = os
 
-    if os == 'darwin':
-        jq_host = 'osx'
+    if os == "darwin":
+        jq_host = "osx"
 
     return remote_file(
-        name = 'jq',
+        name = "jq",
         url = [
             f"https://github.com/stedolan/jq/releases/download/jq-{version}/jq-{jq_host}64",
             f"https://github.com/stedolan/jq/releases/download/jq-{version}/jq-{jq_host}-amd64",
