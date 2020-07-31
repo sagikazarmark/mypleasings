@@ -1,3 +1,5 @@
+subinclude("//go")
+
 def go_test(name:str, srcs:list, data:list|dict=None, deps:list=[], worker:str='', visibility:list=None,
             flags:str='', sandbox:bool=None, cgo:bool=False, filter_srcs:bool=True,
             external:bool=False, timeout:int=0, flaky:bool|int=0, test_outputs:list=None,
@@ -9,7 +11,7 @@ def go_test(name:str, srcs:list, data:list|dict=None, deps:list=[], worker:str='
 
     return go_testx(
         name = name,
-        srcs = srcs
+        srcs = srcs,
         data = data,
         deps = deps,
         # worker = worker,

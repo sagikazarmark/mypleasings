@@ -71,9 +71,9 @@ def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=No
 
     return build_rule(
         name = name,
-        srcs = srcs,
+        srcs = srcs + glob(["*_test.go"]),
         deps = deps,
-        outs = [name],
+        outs = [name+".testbin"],
         cmd = cmds,
         tools = tools,
         data = data,

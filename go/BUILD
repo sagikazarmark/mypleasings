@@ -11,7 +11,7 @@ filegroup(
 )
 
 filegroup(
-    name = "combat",
-    srcs = ["go.build_defs", "compat.build_defs"],
+    name = "compat",
+    srcs = [":go", "compat.build_defs"],
     visibility = ["PUBLIC"],
 )
