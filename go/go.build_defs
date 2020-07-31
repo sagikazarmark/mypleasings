@@ -77,7 +77,7 @@ def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=No
         cmd = cmds,
         tools = tools,
         data = data,
-        test_cmd = '$TEST %s 2>&1 | tee "$RESULTS_FILE"' % flags,
+        test_cmd = 'cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR" && $TEST %s 2>&1 | tee "$RESULTS_FILE"' % flags,
         pass_env = _GO_ENV_VARS + pass_env,
         building_description = "Compiling...",
         needs_transitive_deps = True,
