@@ -22,7 +22,7 @@ def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
       pass_env (list): List of environment variables to be passed from outside.
                        Any changes to them will be recorded in this target's hash and will hence force it to rebuild.
     """
-    cmds, tools = _go_build_cmds(definitions, tags, trimpath)
+    cmds, tools = _go_build_cmds("build", "", definitions, tags, trimpath)
 
     return build_rule(
         name = name,
@@ -41,12 +41,65 @@ def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
         stamp = stamp,
     )
 
+def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=None,
+             flags:str="", sandbox:bool=None, timeout:int=0, flaky:bool|int=0,
+             test_outputs:list=None, labels:list&features&tags=None, size:str=None,
+             tags:list=[], pass_env:list=[]):
+    """Defines a Go test rule.
+
+    Args:
+      name (str): Name of the rule.
+      srcs (list): Go source files. Only used for determining if the target changed.
+      deps (list): Dependencies
+      data (list): Runtime data files for the test.
+      visibility (list): Visibility of the rule.
+      flags (str): Flags to apply to the test invocation.
+      sandbox (bool): Sandbox the test on Linux to restrict access to namespaces such as network.
+      timeout (int): Timeout in seconds to allow the test to run for.
+      flaky (int | bool): True to mark the test as flaky, or an integer to specify how many reruns.
+      test_outputs (list): Extra test output files to generate from this test.
+      labels (list): Labels for this rule.
+      size (str): Test size (enormous, large, medium or small).
+      tags (list): List of Go build tags passed to the build command.
+      pass_env (list): List of environment variables to be passed from outside.
+                       Any changes to them will be recorded in this target's hash and will hence force it to rebuild.
+    """
+    cmds, tools = _go_build_cmds("test", "-c", None, tags, False)
+
+    if flags.count("-test.v ") == 0 and not flags.endswith("-test.v"):
+        flags += " -test.v"
+
+    return build_rule(
+        name = name,
+        srcs = srcs + glob(["*_test.go"]),
+        deps = deps,
+        outs = [name+".testbin"],
+        cmd = cmds,
+        tools = tools,
+        data = data,
+        test_cmd = 'cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR" && $TEST %s 2>&1 | tee "$RESULTS_FILE"' % flags,
+        pass_env = _GO_ENV_VARS + pass_env,
+        building_description = "Compiling...",
+        needs_transitive_deps = True,
+        output_is_complete=True,
+        binary = True,
+        labels = labels,
+        test = True,
+        test_sandbox = sandbox,
+        test_timeout = timeout,
+        size  =  size,
+        flaky = flaky,
+        test_outputs = test_outputs,
+        visibility = visibility,
+        requires = ["go", "test"],
+    )
+
 CONFIG.setdefault("GO_HOME", None)
 
-def _go_build_cmds(definitions:str|list|dict=None, tags:list=[], trimpath:bool):
+def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:list=[], trimpath:bool):
     """Returns the commands to run for compiling a Go binary."""
 
-    flags = "build -mod=readonly"
+    flags = f"{cmd} {args} -mod=readonly"
 
     if trimpath:
         flags += " -trimpath"
