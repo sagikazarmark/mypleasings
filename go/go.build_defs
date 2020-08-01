@@ -1,3 +1,24 @@
+def go_mod(name:str="go.mod", modfile:str="go.mod", deps:list=[], visibility:list=["PUBLIC"]):
+    """References a go.mod file (along with its go.sum).
+
+    Args:
+      name (str): Name of the rule. Defaults to "go.mod".
+      modfile (str): The name of the mod file. Defaults to "go.mod".
+      deps (list): Dependencies (like other go.mod files from local replaces)
+      visibility (list): Visibility of the rule.
+    """
+
+    assert modfile.endswith(".mod"), "Modfile must have .mod extension"
+
+    sumfile = modfile[:-4] + ".sum"
+
+    return filegroup(
+        name = name,
+        srcs = [modfile, sumfile],
+        deps = deps,
+        visibility = visibility,
+    )
+
 _GO_ENV_VARS = ["GOCACHE", "GODEBUG", "GOENV", "GOFLAGS", "GOINSECURE", "GOPROXY", "GOPRIVATE", "GONOPROXY", "GONOSUMDB", "GOSUMDB"]
 
 CONFIG.setdefault("GOMOD", None)
@@ -24,6 +45,8 @@ def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
       pass_env (list): List of environment variables to be passed from outside.
                        Any changes to them will be recorded in this target's hash and will hence force it to rebuild.
       in_tree (bool): Run the Go tool in the project root instead of the temp directory.
+                      When False, you either have to set the GOMOD build config or pass your
+                      go.mod and go.sum files as dependencies to the rule.
     """
     cmds, tools = _go_build_cmds("build", "", definitions, tags, trimpath, in_tree)
 
@@ -70,6 +93,8 @@ def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=No
       pass_env (list): List of environment variables to be passed from outside.
                        Any changes to them will be recorded in this target's hash and will hence force it to rebuild.
       in_tree (bool): Run the Go tool in the project root instead of the temp directory.
+                      When False, you either have to set the GOMOD build config or pass your
+                      go.mod and go.sum files as dependencies to the rule.
     """
     cmds, tools = _go_build_cmds("test", "-c", None, tags, False, in_tree)
 
@@ -136,6 +161,8 @@ def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:li
 
     if in_tree:
         prefix_cmds += ['cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR"']
+    else:
+        prefix_cmds += ['cd "$PKG_DIR"']
 
     if CONFIG.GO_HOME:
         prefix_cmds += [f'export HOME="{CONFIG.GO_HOME}"']
