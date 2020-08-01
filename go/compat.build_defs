@@ -1,12 +1,46 @@
 subinclude("//go")
 
+def go_library(name:str, srcs:list, asm_srcs:list=None, hdrs:list=None, out:str=None, deps:list=[],
+               visibility:list=None, test_only:bool&testonly=False, complete:bool=True,
+               _needs_transitive_deps=False, _all_srcs=False, cover:bool=True,
+               filter_srcs:bool=True, _link_private:bool=False, _link_extra:bool=True, _abi:str=False):
+    """Generates a Go library which can be reused by other rules.
+       Provides a compatibility layer for the official go_library rule, but uses filegroup under the hood.
+    """
+
+    return filegroup(
+        name = name,
+        srcs = srcs,
+        deps = deps,
+        visibility = visibility,
+        test_only = test_only,
+    )
+
+def go_binary(name:str, srcs:list=[], asm_srcs:list=[], out:str=None, deps:list=[], data:list=None,
+              visibility:list=None, test_only:bool&testonly=False, static:bool=CONFIG.GO_DEFAULT_STATIC,
+              filter_srcs:bool=True, definitions:str|list|dict=None, stamp:bool=False):
+    """Compiles a Go binary.
+       Provides a compatibility layer for the official go_binary rule, but uses go_build under the hood.
+    """
+
+    return go_build(
+        name = name,
+        out = out,
+        deps = deps,
+        # data = data,
+        visibility = visibility,
+        test_only = test_only,
+        definitions = definitions,
+        stamp = stamp,
+    )
+
 def go_test(name:str, srcs:list, data:list|dict=None, deps:list=[], worker:str='', visibility:list=None,
             flags:str='', sandbox:bool=None, cgo:bool=False, filter_srcs:bool=True,
             external:bool=False, timeout:int=0, flaky:bool|int=0, test_outputs:list=None,
             labels:list&features&tags=None, size:str=None, static:bool=CONFIG.GO_DEFAULT_STATIC,
             definitions:str|list|dict=None):
-    """Defines a Go test rule. Provides a compatibility layer for the official go_test rule,
-       but uses go_testx under the hood.
+    """Defines a Go test rule.
+       Provides a compatibility layer for the official go_test rule, but uses go_testx under the hood.
     """
 
     return go_testx(
