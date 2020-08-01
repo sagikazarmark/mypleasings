@@ -1,5 +1,7 @@
 _GO_ENV_VARS = ["GOCACHE", "GODEBUG", "GOENV", "GOFLAGS", "GOINSECURE", "GOPROXY", "GOPRIVATE", "GONOPROXY", "GONOSUMDB", "GOSUMDB"]
 
+CONFIG.setdefault("GOMOD", None)
+
 def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
              test_only:bool&testonly=False, definitions:str|list|dict=None, stamp:bool=False,
              tags:list=[], trimpath:bool=False, pass_env:list=[]):
@@ -23,6 +25,9 @@ def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
                        Any changes to them will be recorded in this target's hash and will hence force it to rebuild.
     """
     cmds, tools = _go_build_cmds("build", "", definitions, tags, trimpath)
+
+    if CONFIG.GOMOD:
+        deps += [CONFIG.GOMOD]
 
     return build_rule(
         name = name,
@@ -68,6 +73,9 @@ def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=No
 
     if flags.count("-test.v ") == 0 and not flags.endswith("-test.v"):
         flags += " -test.v"
+
+    if CONFIG.GOMOD:
+        deps += [CONFIG.GOMOD]
 
     return build_rule(
         name = name,
