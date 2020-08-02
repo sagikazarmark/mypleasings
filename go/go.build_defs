@@ -1,8 +1,31 @@
+def go_mod(name:str="go.mod", modfile:str="go.mod", deps:list=[], visibility:list=["PUBLIC"]):
+    """References a go.mod file (along with its go.sum).
+
+    Args:
+      name (str): Name of the rule. Defaults to "go.mod".
+      modfile (str): The name of the mod file. Defaults to "go.mod".
+      deps (list): Dependencies (like other go.mod files from local replaces)
+      visibility (list): Visibility of the rule.
+    """
+
+    assert modfile.endswith(".mod"), "Modfile must have .mod extension"
+
+    sumfile = modfile[:-4] + ".sum"
+
+    return filegroup(
+        name = name,
+        srcs = [modfile, sumfile],
+        deps = deps,
+        visibility = visibility,
+    )
+
 _GO_ENV_VARS = ["GOCACHE", "GODEBUG", "GOENV", "GOFLAGS", "GOINSECURE", "GOPROXY", "GOPRIVATE", "GONOPROXY", "GONOSUMDB", "GOSUMDB"]
+
+CONFIG.setdefault("GOMOD", None)
 
 def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
              test_only:bool&testonly=False, definitions:str|list|dict=None, stamp:bool=False,
-             tags:list=[], trimpath:bool=False, pass_env:list=[]):
+             tags:list=[], trimpath:bool=False, pass_env:list=[], in_tree:bool=True):
     """Compiles a go binary.
 
     Args:
@@ -21,8 +44,14 @@ def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
       trimpath (bool): Remove all file system paths from the resulting executable.
       pass_env (list): List of environment variables to be passed from outside.
                        Any changes to them will be recorded in this target's hash and will hence force it to rebuild.
+      in_tree (bool): Run the Go tool in the project root instead of the temp directory.
+                      When False, you either have to set the GOMOD build config or pass your
+                      go.mod and go.sum files as dependencies to the rule.
     """
-    cmds, tools = _go_build_cmds("build", "", definitions, tags, trimpath)
+    cmds, tools = _go_build_cmds("build", "", definitions, tags, trimpath, in_tree)
+
+    if CONFIG.GOMOD:
+        deps += [CONFIG.GOMOD]
 
     return build_rule(
         name = name,
@@ -44,7 +73,7 @@ def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
 def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=None,
              flags:str="", sandbox:bool=None, timeout:int=0, flaky:bool|int=0,
              test_outputs:list=None, labels:list&features&tags=None, size:str=None,
-             tags:list=[], pass_env:list=[]):
+             tags:list=[], pass_env:list=[], in_tree:bool=True):
     """Defines a Go test rule.
 
     Args:
@@ -63,15 +92,21 @@ def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=No
       tags (list): List of Go build tags passed to the build command.
       pass_env (list): List of environment variables to be passed from outside.
                        Any changes to them will be recorded in this target's hash and will hence force it to rebuild.
+      in_tree (bool): Run the Go tool in the project root instead of the temp directory.
+                      When False, you either have to set the GOMOD build config or pass your
+                      go.mod and go.sum files as dependencies to the rule.
     """
-    cmds, tools = _go_build_cmds("test", "-c", None, tags, False)
+    cmds, tools = _go_build_cmds("test", "-c", None, tags, False, in_tree)
 
     if flags.count("-test.v ") == 0 and not flags.endswith("-test.v"):
         flags += " -test.v"
 
+    if CONFIG.GOMOD:
+        deps += [CONFIG.GOMOD]
+
     return build_rule(
         name = name,
-        srcs = srcs + glob(["*_test.go"]),
+        srcs = srcs,
         deps = deps,
         outs = [name+".testbin"],
         cmd = cmds,
@@ -96,7 +131,7 @@ def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=No
 
 CONFIG.setdefault("GO_HOME", None)
 
-def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:list=[], trimpath:bool):
+def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:list=[], trimpath:bool, in_tree:bool):
     """Returns the commands to run for compiling a Go binary."""
 
     flags = f"{cmd} {args} -mod=readonly"
@@ -122,19 +157,28 @@ def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:li
 
     defs = " ".join([f'-X "{linkerdef}"' for linkerdef in linkerdefs])
 
-    prefix_cmds = ['cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR"']
+    prefix_cmds = []
 
     if CONFIG.GO_HOME:
         prefix_cmds += [f'export HOME="{CONFIG.GO_HOME}"']
 
-    if CONFIG.GOPATH:
-        prefix_cmds += [f'export GOPATH="{CONFIG.GOPATH}"']
+    gopath = CONFIG.GOPATH
 
-    prefix_cmd = " && ".join(prefix_cmds)
+    if not in_tree and gopath == "$TMP_DIR:$TMP_DIR/src:$TMP_DIR/$PKG_DIR:$TMP_DIR/third_party/go:$TMP_DIR/third_party/":
+        prefix_cmds += ['mkdir -p "$TMP_DIR/plz-go"']
+        gopath = "$TMP_DIR/plz-go"
+
+    if gopath:
+        prefix_cmds += [f'export GOPATH="{gopath}"']
+
+    if in_tree:
+        prefix_cmds += ['cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR"']
+    else:
+        prefix_cmds += ['mkdir -p "$TMP_DIR/plz-tmp"', 'export TMPDIR="$TMP_DIR/plz-tmp"', 'cd "$PKG_DIR"']
 
     cmds = {
-        'dbg': f'{prefix_cmd} && "$TOOLS_GO" {flags} -ldflags "{defs}" -o "$OUT"',
-        'opt': f'{prefix_cmd} && "$TOOLS_GO" {flags} -ldflags "-s -w {defs}" -o "$OUT"',
+        'dbg': " && ".join(prefix_cmds + [f'"$TOOLS_GO" {flags} -ldflags "{defs}" -o "$OUT"']),
+        'opt': " && ".join(prefix_cmds + [f'"$TOOLS_GO" {flags} -ldflags "-s -w {defs}" -o "$OUT"']),
     }
 
     return cmds, {

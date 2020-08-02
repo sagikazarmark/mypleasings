@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "github.com/sagikazarmark/mypleasings/test/go/lib"
 
 func main() {
-	fmt.Println("Hello, World!")
+	println("Hello,", lib.World+"!")
 }
