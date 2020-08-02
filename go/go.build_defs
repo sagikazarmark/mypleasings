@@ -159,16 +159,22 @@ def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:li
 
     prefix_cmds = []
 
+    if CONFIG.GO_HOME:
+        prefix_cmds += [f'export HOME="{CONFIG.GO_HOME}"']
+
+    gopath = CONFIG.GOPATH
+
+    if not in_tree and gopath == "$TMP_DIR:$TMP_DIR/src:$TMP_DIR/$PKG_DIR:$TMP_DIR/third_party/go:$TMP_DIR/third_party/":
+        prefix_cmds += ['mkdir -p "$TMP_DIR/plz-go"']
+        gopath = "$TMP_DIR/plz-go"
+
+    if gopath:
+        prefix_cmds += [f'export GOPATH="{gopath}"']
+
     if in_tree:
         prefix_cmds += ['cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR"']
     else:
         prefix_cmds += ['mkdir -p "$TMP_DIR/plz-tmp"', 'export TMPDIR="$TMP_DIR/plz-tmp"', 'cd "$PKG_DIR"']
-
-    if CONFIG.GO_HOME:
-        prefix_cmds += [f'export HOME="{CONFIG.GO_HOME}"']
-
-    if CONFIG.GOPATH:
-        prefix_cmds += [f'export GOPATH="{CONFIG.GOPATH}"']
 
     cmds = {
         'dbg': " && ".join(prefix_cmds + [f'"$TOOLS_GO" {flags} -ldflags "{defs}" -o "$OUT"']),
