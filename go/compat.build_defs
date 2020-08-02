@@ -14,6 +14,7 @@ def go_library(name:str, srcs:list, asm_srcs:list=None, hdrs:list=None, out:str=
         deps = deps,
         visibility = visibility,
         test_only = test_only,
+        output_is_complete = False,
     )
 
 def go_binary(name:str, srcs:list=[], asm_srcs:list=[], out:str=None, deps:list=[], data:list=None,
