@@ -162,7 +162,7 @@ def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:li
     if in_tree:
         prefix_cmds += ['cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR"']
     else:
-        prefix_cmds += ['cd "$PKG_DIR"']
+        prefix_cmds += ['mkdir -p "$TMP_DIR/plz-tmp"', 'export TMPDIR="$TMP_DIR/plz-tmp"', 'cd "$PKG_DIR"']
 
     if CONFIG.GO_HOME:
         prefix_cmds += [f'export HOME="{CONFIG.GO_HOME}"']
