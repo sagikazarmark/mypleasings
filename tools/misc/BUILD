@@ -23,3 +23,11 @@ jq_binary(
     version = CONFIG.JQ_VERSION,
     visibility = ["PUBLIC"],
 )
+
+CONFIG.setdefault("HUB_VERSION", "2.14.2")
+
+hub_binary(
+    name = "hub",
+    version = CONFIG.HUB_VERSION,
+    visibility = ["PUBLIC"],
+)
