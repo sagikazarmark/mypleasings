@@ -1,6 +1,6 @@
 subinclude("//go:tools")
 
-CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.29.0")
+CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.30.0")
 
 golangci_lint_binary(
     name = "golangci-lint",
