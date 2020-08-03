@@ -1,0 +1,26 @@
+CONFIG.setdefault("HUB_TOOL", "//tools/github:hub")
+
+def github_release(name:str, assets:list=[], visibility:list=None, labels:list=[]):
+    """Generates a script for publishing a release on GitHub.
+
+    Args:
+      name (str): Name of the rule.
+      assets (list): List of release assets to be published with the release.
+      visibility (list): Visibility of the rule.
+      labels (list): Labels of this rule.
+    """
+
+    cmd = f"$(out_location {CONFIG.HUB_TOOL}) release create"
+
+    for asset in assets:
+        cmd += f" -a $(out_location {asset})"
+
+    cmd += " \\\${@}"
+
+    return sh_cmd(
+        name = name,
+        cmd = cmd,
+        deps = [CONFIG.HUB_TOOL] + assets,
+        visibility = visibility,
+        labels = labels,
+    )
