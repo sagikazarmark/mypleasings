@@ -10,7 +10,7 @@ def go_library(name:str, srcs:list, asm_srcs:list=None, hdrs:list=None, out:str=
 
     return filegroup(
         name = name,
-        srcs = srcs,
+        #srcs = srcs,
         deps = deps,
         visibility = visibility,
         test_only = test_only,
