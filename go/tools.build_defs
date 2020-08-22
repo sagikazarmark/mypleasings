@@ -117,18 +117,11 @@ def pkger_binary(name:str, version:str, hashes:list=None, out:str="",
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    osmap = {
-        "darwin": "Darwin",
-        "linux": "Linux",
-    }
-
-    archmap = {
+    download_os = os[0].upper() + os[1:]
+    download_arch = {
         "amd64": "x86_64",
         "386": "i386",
-    }
-
-    download_os = osmap[os]
-    download_arch = archmap[arch]
+    }[arch]
 
     return genrule(
         name = name,

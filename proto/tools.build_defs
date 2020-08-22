@@ -15,14 +15,11 @@ def buf_binary(name:str, version:str=None, hashes:list=None, out:str="",
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    _buf_os = {
-        "darwin": "Darwin",
-        "linux": "Linux",
-    }
+    download_os = os[0].upper() + os[1:]
 
     return remote_file(
         name = "buf",
-        url = f"https://github.com/bufbuild/buf/releases/download/v%s/buf-%s-x86_64" % (version, _buf_os[os]),
+        url = f"https://github.com/bufbuild/buf/releases/download/v{version}/buf-{download_os}-x86_64",
         out = out or "buf",
         binary = True,
         visibility = visibility,
