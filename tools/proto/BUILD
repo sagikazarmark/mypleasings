@@ -1,6 +1,6 @@
 subinclude("//proto:tools")
 
-CONFIG.setdefault("PROTOC_VERSION", "3.12.3")
+CONFIG.setdefault("PROTOC_VERSION", "3.13.0")
 
 protoc_binary(
     name = "protoc",
@@ -8,7 +8,7 @@ protoc_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("BUF_VERSION", "0.20.4")
+CONFIG.setdefault("BUF_VERSION", "0.20.5")
 
 buf_binary(
     name = "buf",

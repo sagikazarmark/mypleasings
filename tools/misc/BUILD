@@ -8,7 +8,7 @@ licensei_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("MIGRATE_VERSION", "4.11.0")
+CONFIG.setdefault("MIGRATE_VERSION", "4.12.2")
 
 migrate_binary(
     name = "migrate",
