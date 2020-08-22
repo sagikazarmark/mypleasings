@@ -8,6 +8,14 @@ protoc_binary(
     visibility = ["PUBLIC"],
 )
 
+CONFIG.setdefault("PROTOC_GEN_GO_VERSION", "1.25.0")
+
+protoc_gen_go_binary(
+    name = "protoc-gen-go",
+    version = CONFIG.PROTOC_GEN_GO_VERSION,
+    visibility = ["PUBLIC"],
+)
+
 CONFIG.setdefault("BUF_VERSION", "0.20.5")
 
 buf_binary(
