@@ -23,3 +23,11 @@ mga_binary(
     version = CONFIG.MGA_VERSION,
     visibility = ["PUBLIC"],
 )
+
+CONFIG.setdefault("PKGER_VERSION", "0.17.0")
+
+pkger_binary(
+    name = "pkger",
+    version = CONFIG.PKGER_VERSION,
+    visibility = ["PUBLIC"],
+)
