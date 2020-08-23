@@ -74,7 +74,7 @@ def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
 
 def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=None,
              flags:str="", sandbox:bool=None, timeout:int=0, flaky:bool|int=0,
-             test_outputs:list=None, labels:list&features&tags=None, size:str=None,
+             test_outputs:list=None, labels:list&features&tags=[], size:str=None,
              tags:list=[], pass_env:list=[], in_tree:bool=True):
     """Defines a Go test rule.
 
