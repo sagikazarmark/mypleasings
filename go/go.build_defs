@@ -69,7 +69,7 @@ def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
         visibility = visibility,
         requires = ["go"],
         stamp = stamp,
-        labels = labels,
+        labels = labels + ["go"],
     )
 
 def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=None,
@@ -120,7 +120,7 @@ def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=No
         needs_transitive_deps = True,
         output_is_complete=True,
         binary = True,
-        labels = labels,
+        labels = labels + ["go"],
         test = True,
         test_sandbox = sandbox,
         test_timeout = timeout,
