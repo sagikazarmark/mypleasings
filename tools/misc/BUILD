@@ -23,3 +23,12 @@ jq_binary(
     version = CONFIG.JQ_VERSION,
     visibility = ["PUBLIC"],
 )
+
+# This is an exception, because semver is too general
+CONFIG.setdefault("SEMVER_TOOL_VERSION", "3.0.0")
+
+semver_script(
+    name = "semver",
+    version = CONFIG.SEMVER_TOOL_VERSION,
+    visibility = ["PUBLIC"],
+)

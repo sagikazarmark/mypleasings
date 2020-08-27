@@ -99,3 +99,27 @@ def jq_binary(name:str, version:str, hashes:list=None, out:str="",
         visibility = visibility,
         test_only = test_only,
     )
+
+def semver_script(name:str, version:str, hashes:list=None, out:str="",
+                  visibility:list=None, test_only:bool&testonly=False):
+    """Downloads a semver script.
+
+    Args:
+      name (str): Name of the rule.
+      version (str): Version of the binary to download.
+      hashes (list): Hashes to verify the download against.
+      out (str): Output name of the binary. Chosen automatically if not given.
+      visibility (list): Visibility declaration of the rule.
+      test_only (bool): If true the rule is only visible to test targets.
+      host (bool): If true the rule will always target the host OS and Arch.
+    """
+
+    return remote_file(
+        name = name,
+        url = f"https://raw.githubusercontent.com/fsaintjacques/semver-tool/{version}/src/semver",
+        out = out or "semver",
+        hashes = hashes,
+        binary = True,
+        visibility = visibility,
+        test_only = test_only,
+    )
