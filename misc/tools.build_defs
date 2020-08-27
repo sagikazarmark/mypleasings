@@ -89,11 +89,12 @@ def jq_binary(name:str, version:str, hashes:list=None, out:str="",
         download_os = "osx"
 
     return remote_file(
-        name = "jq",
+        name = name,
         url = [
             f"https://github.com/stedolan/jq/releases/download/jq-{version}/jq-{download_os}64",
             f"https://github.com/stedolan/jq/releases/download/jq-{version}/jq-{download_os}-amd64",
         ],
+        hashes = hashes,
         out = out or "jq",
         binary = True,
         visibility = visibility,
@@ -117,8 +118,8 @@ def semver_script(name:str, version:str, hashes:list=None, out:str="",
     return remote_file(
         name = name,
         url = f"https://raw.githubusercontent.com/fsaintjacques/semver-tool/{version}/src/semver",
-        out = out or "semver",
         hashes = hashes,
+        out = out or "semver",
         binary = True,
         visibility = visibility,
         test_only = test_only,
