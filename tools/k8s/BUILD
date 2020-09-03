@@ -1,6 +1,6 @@
 subinclude("//k8s:tools")
 
-CONFIG.setdefault("KUBECTL_VERSION", "1.18.8")
+CONFIG.setdefault("KUBECTL_VERSION", "1.19.0")
 
 kubectl_binary(
     name = "kubectl",
@@ -16,7 +16,7 @@ kind_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("HELM_VERSION", "3.3.0")
+CONFIG.setdefault("HELM_VERSION", "3.3.1")
 
 helm_binary(
     name = "helm",
