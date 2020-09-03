@@ -32,3 +32,11 @@ semver_script(
     version = CONFIG.SEMVER_TOOL_VERSION,
     visibility = ["PUBLIC"],
 )
+
+CONFIG.setdefault("FOSSA_VERSION", "1.1.0")
+
+fossa_binary(
+    name = "fossa",
+    version = CONFIG.FOSSA_VERSION,
+    visibility = ["PUBLIC"],
+)
