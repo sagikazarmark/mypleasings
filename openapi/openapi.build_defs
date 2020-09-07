@@ -1,7 +1,8 @@
 CONFIG.setdefault("OPENAPI_GENERATOR_IMAGE", "openapitools/openapi-generator-cli")
 CONFIG.setdefault("OPENAPI_GENERATOR_VERSION", "v4.3.1")
 
-def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_properties:dict={}, deps:list=[], visibility:list=None, test_only:bool&testonly=False, strip:list=None):
+def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_properties:dict={}, deps:list=[],
+                    labels:list=[], visibility:list=None, test_only:bool&testonly=False, strip:list=None):
     """Generates client or server libraries and stubs from an OpenAPI specification.
 
     It uses the unofficial OpenAPI Generator under the hood: https://github.com/OpenAPITools/openapi-generator
@@ -14,7 +15,8 @@ def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_
       additional_properties (dict): A list of additional properties passed to the generator.
                                     See the documentation for the list of available options for each generator.
       deps (list): Dependencies
-      visibility (list): Visibility specification
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
       test_only (bool): If true this rule will only be visible to tests.
       strip (list): List of paths to strip from the generated target.
     """
@@ -46,7 +48,7 @@ def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_
         test_only = test_only,
     )
 
-def openapi_validate(name:str, spec:str, visibility:list=None):
+def openapi_validate(name:str, spec:str, labels:list=[], visibility:list=None):
     """Validates an OpenAPI specification.
 
     It uses the unofficial OpenAPI Generator under the hood: https://github.com/OpenAPITools/openapi-generator
@@ -54,7 +56,8 @@ def openapi_validate(name:str, spec:str, visibility:list=None):
     Args:
       name (str): Name of the rule.
       spec (str): OpenAPI specification.
-      visibility (list): Visibility specification
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
     """
 
     return gentest(
