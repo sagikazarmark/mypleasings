@@ -1,4 +1,4 @@
-def kubectl_binary(name:str, version:str, hashes:list=None, out:str="",
+def kubectl_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                    visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled kubectl binary.
 
@@ -7,6 +7,7 @@ def kubectl_binary(name:str, version:str, hashes:list=None, out:str="",
       version (str): Version of the binary to download.
       hashes (list): Hashes to verify the download against.
       out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
       host (bool): If true the rule will always target the host OS and Arch.
@@ -21,11 +22,12 @@ def kubectl_binary(name:str, version:str, hashes:list=None, out:str="",
         hashes = hashes,
         out = out or "kubectl",
         binary = True,
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )
 
-def kind_binary(name:str, version:str, hashes:list=None, out:str="",
+def kind_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                 visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled kind binary.
 
@@ -34,6 +36,7 @@ def kind_binary(name:str, version:str, hashes:list=None, out:str="",
       version (str): Version of the binary to download.
       hashes (list): Hashes to verify the download against.
       out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
       host (bool): If true the rule will always target the host OS and Arch.
@@ -48,11 +51,12 @@ def kind_binary(name:str, version:str, hashes:list=None, out:str="",
         hashes = hashes,
         out = out or "kind",
         binary = True,
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )
 
-def helm_binary(name:str, version:str, hashes:list=None, out:str="",
+def helm_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                 visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled helm binary.
 
@@ -61,6 +65,7 @@ def helm_binary(name:str, version:str, hashes:list=None, out:str="",
       version (str): Version of the binary to download.
       hashes (list): Hashes to verify the download against.
       out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
       host (bool): If true the rule will always target the host OS and Arch.
@@ -77,11 +82,13 @@ def helm_binary(name:str, version:str, hashes:list=None, out:str="",
             url = f"https://get.helm.sh/helm-v{version}-{os}-{arch}.tar.gz",
             hashes = hashes,
             out = f"helm-{version}-{os}-{arch}.tar.gz",
+            labels = labels,
         )],
         outs = [out or "helm"],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" helm -o tmp && mv $(find tmp -name "helm") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )

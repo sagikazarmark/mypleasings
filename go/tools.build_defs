@@ -1,4 +1,4 @@
-def golangci_lint_binary(name:str, version:str, hashes:list=None, out:str="",
+def golangci_lint_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                          visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled golangci-lint binary.
 
@@ -7,6 +7,7 @@ def golangci_lint_binary(name:str, version:str, hashes:list=None, out:str="",
       version (str): Version of the binary to download.
       hashes (list): Hashes to verify the download against.
       out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
       host (bool): If true the rule will always target the host OS and Arch.
@@ -23,16 +24,18 @@ def golangci_lint_binary(name:str, version:str, hashes:list=None, out:str="",
             url = f"https://github.com/golangci/golangci-lint/releases/download/v{version}/golangci-lint-{version}-{os}-{arch}.tar.gz",
             hashes = hashes,
             out = f"golangci-lint-{version}-{os}-{arch}.tar.gz",
+            labels = labels,
         )],
         outs = [out or "golangci-lint"],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" golangci-lint -o tmp && mv $(find tmp -name "golangci-lint") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )
 
-def gotestsum_binary(name:str, version:str, hashes:list=None, out:str="",
+def gotestsum_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                      visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled gotestsum binary.
 
@@ -41,6 +44,7 @@ def gotestsum_binary(name:str, version:str, hashes:list=None, out:str="",
       version (str): Version of the binary to download.
       hashes (list): Hashes to verify the download against.
       out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
       host (bool): If true the rule will always target the host OS and Arch.
@@ -57,16 +61,18 @@ def gotestsum_binary(name:str, version:str, hashes:list=None, out:str="",
             url = f"https://github.com/gotestyourself/gotestsum/releases/download/v{version}/gotestsum_{version}_{os}_{arch}.tar.gz",
             hashes = hashes,
             out = f"gotestsum-{version}-{os}-{arch}.tar.gz",
+            labels = labels,
         )],
         outs = [out or "gotestsum"],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" gotestsum -o tmp && mv $(find tmp -name "gotestsum") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )
 
-def mga_binary(name:str, version:str, hashes:list=None, out:str="",
+def mga_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled mga binary.
 
@@ -75,6 +81,7 @@ def mga_binary(name:str, version:str, hashes:list=None, out:str="",
       version (str): Version of the binary to download.
       hashes (list): Hashes to verify the download against.
       out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
       host (bool): If true the rule will always target the host OS and Arch.
@@ -91,16 +98,18 @@ def mga_binary(name:str, version:str, hashes:list=None, out:str="",
             url = f"https://github.com/sagikazarmark/mga/releases/download/v{version}/mga_{os}_{arch}.tar.gz",
             hashes = hashes,
             out = f"mga-{version}-{os}-{arch}.tar.gz",
+            labels = labels,
         )],
         outs = [out or "mga"],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" mga -o tmp && mv $(find tmp -name "mga") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )
 
-def pkger_binary(name:str, version:str, hashes:list=None, out:str="",
+def pkger_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                  visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled pkger binary.
 
@@ -109,6 +118,7 @@ def pkger_binary(name:str, version:str, hashes:list=None, out:str="",
       version (str): Version of the binary to download.
       hashes (list): Hashes to verify the download against.
       out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
       host (bool): If true the rule will always target the host OS and Arch.
@@ -131,11 +141,13 @@ def pkger_binary(name:str, version:str, hashes:list=None, out:str="",
             url = f"https://github.com/markbates/pkger/releases/download/v{version}/pkger_{version}_{download_os}_{download_arch}.tar.gz",
             hashes = hashes,
             out = f"pkger-{version}-{os}-{arch}.tar.gz",
+            labels = labels,
         )],
         outs = [out or "pkger"],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" pkger -o tmp && mv $(find tmp -name "pkger") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )

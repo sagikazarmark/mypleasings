@@ -1,11 +1,12 @@
 CONFIG.setdefault("HELM_TOOL", "//tools/k8s:helm")
 
-def helm_package(name:str, visibility:list=None):
+def helm_package(name:str, labels:list=[], visibility:list=None):
     """Packages a Helm chart into a versioned chart archive.
 
     Args:
       name (str): Name of the rule.
-      visibility (list): Visibility of the rule.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
     """
     return genrule(
         name = name,
@@ -16,21 +17,24 @@ def helm_package(name:str, visibility:list=None):
         ],
         output_dirs = ["helm-out"],
         tools = {"helm": [CONFIG.HELM_TOOL]},
+        labels = labels,
         visibility = visibility,
     )
 
-def helm_lint(name:str, visibility:list=None):
+def helm_lint(name:str, labels:list=[], visibility:list=None):
     """Lints a Helm chart.
 
     Args:
       name (str): Name of the rule.
-      visibility (list): Visibility of the rule.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
     """
 
     return gentest(
         name = name,
         test_cmd = f'"$(location {CONFIG.HELM_TOOL})" lint "$PKG_DIR" 2>&1',
         data = glob(["**"], hidden = True) + [CONFIG.HELM_TOOL],
+        labels = labels,
         visibility = visibility,
         no_test_output = True,
     )

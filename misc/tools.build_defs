@@ -1,4 +1,4 @@
-def licensei_binary(name:str, version:str, hashes:list=None, out:str="",
+def licensei_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                     visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled licensei binary.
 
@@ -7,6 +7,7 @@ def licensei_binary(name:str, version:str, hashes:list=None, out:str="",
       version (str): Version of the binary to download.
       hashes (list): Hashes to verify the download against.
       out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
       host (bool): If true the rule will always target the host OS and Arch.
@@ -23,16 +24,18 @@ def licensei_binary(name:str, version:str, hashes:list=None, out:str="",
             url = f"https://github.com/goph/licensei/releases/download/v{version}/licensei_{os}_{arch}.tar.gz",
             hashes = hashes,
             out = f"licensei-{version}-{os}-{arch}.tar.gz",
+            labels = labels,
         )],
         outs = [out or "licensei"],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" licensei -o tmp && mv $(find tmp -name "licensei") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )
 
-def migrate_binary(name:str, version:str, hashes:list=None, out:str="",
+def migrate_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                    visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled migrate binary.
 
@@ -41,6 +44,7 @@ def migrate_binary(name:str, version:str, hashes:list=None, out:str="",
       version (str): Version of the binary to download.
       hashes (list): Hashes to verify the download against.
       out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
       host (bool): If true the rule will always target the host OS and Arch.
@@ -57,16 +61,18 @@ def migrate_binary(name:str, version:str, hashes:list=None, out:str="",
             url = f"https://github.com/golang-migrate/migrate/releases/download/v{version}/migrate.{os}-{arch}.tar.gz",
             hashes = hashes,
             out = f"migrate-{version}-{os}-{arch}.tar.gz",
+            labels = labels,
         )],
         outs = [out or "migrate"],
         binary = True,
         cmd = f'"$TOOL" x "$SRCS" migrate -o tmp && mv $(find tmp -name "migrate.{os}-{arch}") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )
 
-def jq_binary(name:str, version:str, hashes:list=None, out:str="",
+def jq_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
               visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled jq binary.
 
@@ -75,6 +81,7 @@ def jq_binary(name:str, version:str, hashes:list=None, out:str="",
       version (str): Version of the binary to download.
       hashes (list): Hashes to verify the download against.
       out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
       host (bool): If true the rule will always target the host OS and Arch.
@@ -97,11 +104,12 @@ def jq_binary(name:str, version:str, hashes:list=None, out:str="",
         hashes = hashes,
         out = out or "jq",
         binary = True,
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )
 
-def semver_script(name:str, version:str, hashes:list=None, out:str="",
+def semver_script(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                   visibility:list=None, test_only:bool&testonly=False):
     """Downloads a semver script.
 
@@ -110,6 +118,7 @@ def semver_script(name:str, version:str, hashes:list=None, out:str="",
       version (str): Version of the binary to download.
       hashes (list): Hashes to verify the download against.
       out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
       host (bool): If true the rule will always target the host OS and Arch.
@@ -121,11 +130,12 @@ def semver_script(name:str, version:str, hashes:list=None, out:str="",
         hashes = hashes,
         out = out or "semver",
         binary = True,
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )
 
-def fossa_binary(name:str, version:str, hashes:list=None, out:str="",
+def fossa_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                    visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled fossa binary.
 
@@ -134,6 +144,7 @@ def fossa_binary(name:str, version:str, hashes:list=None, out:str="",
       version (str): Version of the binary to download.
       hashes (list): Hashes to verify the download against.
       out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
       host (bool): If true the rule will always target the host OS and Arch.
@@ -150,11 +161,13 @@ def fossa_binary(name:str, version:str, hashes:list=None, out:str="",
             url = f"https://github.com/fossas/fossa-cli/releases/download/v{version}/fossa-cli_{version}_{os}_{arch}.tar.gz",
             hashes = hashes,
             out = f"fossa-{version}-{os}-{arch}.tar.gz",
+            labels = labels,
         )],
         outs = [out or "fossa"],
         binary = True,
         cmd = f'"$TOOL" x "$SRCS" fossa -o tmp && mv $(find tmp -name "fossa") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )
