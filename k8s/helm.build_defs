@@ -41,3 +41,93 @@ def helm_lint(name:str, labels:list=[], visibility:list=None):
         visibility = visibility,
         no_test_output = True,
     )
+
+def helm_package2(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values.yaml", readme:str="README.md", templates:str=None, helmignore:str=".helmignore", labels:list=[], visibility:list=None):
+    """Packages a Helm chart into a versioned chart archive.
+
+    Args:
+      name (str): Name of the rule.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+    """
+
+    assert chart_yaml, "Chart.yaml is required"
+    assert values_yaml, "values.yaml is required"
+    assert readme, "README.md is required"
+
+    templates = templates or filegroup(
+        name = name,
+        tag = "templates",
+        srcs = glob(["templates/**"]),
+    )
+
+    src_rule = filegroup(
+        name = name,
+        tag = "src",
+        srcs = [
+            chart_yaml,
+            values_yaml,
+            readme,
+            templates,
+            helmignore,
+        ],
+    )
+
+    return genrule(
+        name = name,
+        srcs = [src_rule],
+        cmd = [
+            "mkdir helm-out",
+            '"$TOOLS_HELM" package --destination helm-out "$PKG_DIR"',
+        ],
+        output_dirs = ["helm-out"],
+        provides = {"helm_src": src_rule},
+        tools = {"helm": [CONFIG.HELM_TOOL]},
+        labels = labels,
+        visibility = visibility,
+    )
+
+def helm_lint2(name:str, chart:str, labels:list=[], visibility:list=None):
+    """Lints a Helm chart.
+
+    Args:
+      name (str): Name of the rule.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+    """
+
+    return gentest(
+        name = name,
+        test_cmd = f'"$(location {CONFIG.HELM_TOOL})" lint "$PKG_DIR" 2>&1',
+        data = {
+            "chart": [chart],
+            "helm": [CONFIG.HELM_TOOL],
+        },
+        requires = ["helm_src"],
+        labels = labels,
+        visibility = visibility,
+        no_test_output = True,
+    )
+
+def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None, run_tests:bool=False, timeout:str=None, labels:list=[], visibility:list=None):
+    """Packages a Helm chart into a versioned chart archive.
+
+    Args:
+      name (str): Name of the rule.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+    """
+
+    return build_rule(
+        name = name,
+        data = {
+            "chart": [chart],
+            "helm": [CONFIG.HELM_TOOL],
+        },
+        test_cmd = " && ".join([
+            '"$DATA_HELM" install --wait --generate-name "$DATA_CHART"',
+            '"$DATA_HELM" uninstall --wait --generate-name "$DATA_CHART"',
+        ]),
+        pass_env = ["KUBECONFIG"],
+        test = True,
+    )
