@@ -40,3 +40,8 @@ fossa_binary(
     version = CONFIG.FOSSA_VERSION,
     visibility = ["PUBLIC"],
 )
+
+releaser_script(
+    name = "releaser",
+    visibility = ["PUBLIC"],
+)
