@@ -1,4 +1,7 @@
-CONFIG.setdefault("HUB_TOOL", "//tools/github:hub")
+subrepo = subrepo_name()
+subrepo = f"///{subrepo}" if subrepo else ""
+
+CONFIG.setdefault("HUB_TOOL", subrepo+"//tools/github:hub")
 
 def github_release(name:str, assets:list=[], labels:list=[], visibility:list=None):
     """Generates a script for publishing a release on GitHub.
