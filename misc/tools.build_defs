@@ -121,7 +121,6 @@ def semver_script(name:str, version:str, hashes:list=None, out:str="", labels:li
       labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
-      host (bool): If true the rule will always target the host OS and Arch.
     """
 
     return remote_file(
