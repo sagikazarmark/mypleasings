@@ -1,4 +1,7 @@
-CONFIG.setdefault("HELM_TOOL", "//tools/k8s:helm")
+subrepo = subrepo_name()
+subrepo = f"///{subrepo}" if subrepo else ""
+
+CONFIG.setdefault("HELM_TOOL", subrepo+"//tools/k8s:helm")
 
 def helm_package(name:str, labels:list=[], visibility:list=None):
     """Packages a Helm chart into a versioned chart archive.

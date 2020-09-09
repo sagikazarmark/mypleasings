@@ -1,0 +1,7 @@
+def abs_target(target:str):
+    subrepo = subrepo_name()
+
+    if subrepo:
+        return f"///{subrepo}{target}"
+
+    return target
