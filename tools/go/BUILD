@@ -1,6 +1,6 @@
 subinclude("//go:tools")
 
-CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.30.0")
+CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.31.0")
 
 golangci_lint_binary(
     name = "golangci-lint",
@@ -27,7 +27,7 @@ mga_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("PKGER_VERSION", "0.17.0")
+CONFIG.setdefault("PKGER_VERSION", "0.17.1")
 
 pkger_binary(
     name = "pkger",

@@ -1,6 +1,6 @@
 subinclude("//k8s:tools")
 
-CONFIG.setdefault("KUBECTL_VERSION", "1.19.0")
+CONFIG.setdefault("KUBECTL_VERSION", "1.19.1")
 
 kubectl_binary(
     name = "kubectl",
