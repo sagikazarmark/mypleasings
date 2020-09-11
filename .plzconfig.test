@@ -1,2 +1,0 @@
-[buildconfig]
-gomod = //test/go:go.mod

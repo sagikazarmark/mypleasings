@@ -10,16 +10,23 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      PLZ_ARGS: -p
 
     steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Build
-        run: ./pleasew build -p --profile test //test/...
+        run: ./pleasew $PLZ_ARGS build //test/...
 
       - name: Test
-        run: ./pleasew test -p --profile test --log_file=plz-out/log/test.log //test/...
+        run: ./pleasew $PLZ_ARGS test --log_file=plz-out/log/test.log //test/...
 
       - name: Save please log output
         uses: actions/upload-artifact@v1
