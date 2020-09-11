@@ -11,12 +11,6 @@ go_testx(
     srcs = [":lib", "lib_test.go"],
 )
 
-go_testx(
-    name = "test_not_in_tree",
-    srcs = [":lib", "lib_test.go"],
-    in_tree = False,
-)
-
 
 subinclude("//go:compat")
 
