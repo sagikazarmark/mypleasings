@@ -3,50 +3,21 @@ subrepo = f"///{subrepo}" if subrepo else ""
 
 CONFIG.setdefault("HELM_TOOL", subrepo + "//tools/k8s:helm")
 
-def helm_package(name:str, labels:list=[], visibility:list=None):
+def helm_package(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values.yaml", readme:str="README.md",
+                  templates:str=None, tests:str=None, crds:str=None, helmignore:str=".helmignore", srcs:list=[],
+                  labels:list=[], visibility:list=None):
     """Packages a Helm chart into a versioned chart archive.
 
     Args:
       name (str): Name of the rule.
-      labels (list): Labels for this rule.
-      visibility (list): Visibility declaration of the rule.
-    """
-    return genrule(
-        name = name,
-        srcs = glob(["**"], hidden = True),
-        cmd = [
-            "mkdir helm-out",
-            '"$TOOLS_HELM" package --destination helm-out "$PKG_DIR"',
-        ],
-        output_dirs = ["helm-out"],
-        tools = {"helm": [CONFIG.HELM_TOOL]},
-        labels = labels,
-        visibility = visibility,
-    )
-
-def helm_lint(name:str, labels:list=[], visibility:list=None):
-    """Lints a Helm chart.
-
-    Args:
-      name (str): Name of the rule.
-      labels (list): Labels for this rule.
-      visibility (list): Visibility declaration of the rule.
-    """
-
-    return gentest(
-        name = name,
-        test_cmd = f'"$(location {CONFIG.HELM_TOOL})" lint "$PKG_DIR" 2>&1',
-        data = glob(["**"], hidden = True) + [CONFIG.HELM_TOOL],
-        labels = labels,
-        visibility = visibility,
-        no_test_output = True,
-    )
-
-def helm_package2(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values.yaml", readme:str="README.md", templates:str=None, helmignore:str=".helmignore", labels:list=[], visibility:list=None):
-    """Packages a Helm chart into a versioned chart archive.
-
-    Args:
-      name (str): Name of the rule.
+      chart_yaml (str): Chart.yaml file of the chart.
+      values_yaml (str): values.yaml file of the chart.
+      readme (str): Readme of the chart.
+      templates (str): Template files of the chart.
+      tests (str): Test files of the chart.
+      crds (str): Custom Resource Definitions (CRDs) of the chart.
+      helmignore (str): Helmignore file of the chart.
+      srcs (str): Additional source files of the chart (eg. custom config files).
       labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
     """
@@ -58,36 +29,52 @@ def helm_package2(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values
     templates = templates or filegroup(
         name = name,
         tag = "templates",
-        srcs = glob(["templates/**"]),
+        srcs = glob(["templates/**"], exclude = ["templates/tests", "templates/tests/**"]),
     )
 
-    src_rule = filegroup(
+    tests = tests or filegroup(
         name = name,
-        tag = "src",
-        srcs = [
-            chart_yaml,
-            values_yaml,
-            readme,
-            templates,
-            helmignore,
-        ],
+        tag = "tests",
+        srcs = glob(["templates/tests/**"]),
+    )
+
+    crds = crds or filegroup(
+        name = name,
+        tag = "crds",
+        srcs = glob(["crds/**"]),
     )
 
     return genrule(
         name = name,
-        srcs = [src_rule],
+        srcs = {
+            "chart_yaml": [chart_yaml],
+            "values_yaml": [values_yaml],
+            "readme": [readme],
+            "templates": [templates],
+            "tests": [tests],
+            "crds": [crds],
+            "helmignore": [helmignore],
+            "srcs": srcs,
+        },
         cmd = [
-            "mkdir helm-out",
-            '"$TOOLS_HELM" package --destination helm-out "$PKG_DIR"',
+            "mkdir -p charts/%s/{templates,templates/tests,crds} _helm-out/" % (name),
+            f'mv "$SRCS_CHART_YAML" charts/{name}/Chart.yaml',
+            f'mv "$SRCS_VALUES_YAML" charts/{name}/values.yaml',
+            f'mv "$SRCS_README" charts/{name}/README.md',
+            f'for src in $SRCS_TEMPLATES; do if [[ -d "$src" ]]; then mv "$src"/* charts/{name}/templates/; else mv "$src" charts/{name}/templates/; fi; done',
+            f'for src in $SRCS_TESTS; do if [[ -d "$src" ]]; then mv "$src"/* charts/{name}/templates/tests/; else mv "$src" charts/{name}/templates/tests/; fi; done',
+            f'for src in $SRCS_CRDS; do if [[ -d "$src" ]]; then mv "$src"/* charts/{name}/crds/; else mv "$src" charts/{name}/crds/; fi; done',
+            'for src in ${SRCS_SRCS-}; do if [[ -d "$src" ]]; then mv "$src"/* charts/%s/; else mv "$src" charts/%s/; fi; done' % (name, name),
+            f'mv "$SRCS_HELMIGNORE" charts/{name}/.helmignore',
+            f'"$TOOLS_HELM" package --destination _helm-out charts/{name}',
         ],
-        output_dirs = ["helm-out"],
-        provides = {"helm_src": src_rule},
+        output_dirs = [f"_helm-out"],
         tools = {"helm": [CONFIG.HELM_TOOL]},
         labels = labels,
         visibility = visibility,
     )
 
-def helm_lint2(name:str, chart:str, labels:list=[], visibility:list=None):
+def helm_lint(name:str, chart:str, labels:list=[], visibility:list=None):
     """Lints a Helm chart.
 
     Args:
@@ -98,12 +85,11 @@ def helm_lint2(name:str, chart:str, labels:list=[], visibility:list=None):
 
     return gentest(
         name = name,
-        test_cmd = f'"$(location {CONFIG.HELM_TOOL})" lint "$PKG_DIR" 2>&1',
+        test_cmd = f'"$DATA_HELM" lint "$DATA_CHART"',
         data = {
             "chart": [chart],
             "helm": [CONFIG.HELM_TOOL],
         },
-        requires = ["helm_src"],
         labels = labels,
         visibility = visibility,
         no_test_output = True,
