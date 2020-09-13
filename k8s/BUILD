@@ -1,6 +1,6 @@
 filegroup(
     name = "k8s",
-    srcs = ["helm.build_defs"],
+    srcs = ["helm.build_defs", "kind.build_defs"],
     visibility = ["PUBLIC"],
 )
 
