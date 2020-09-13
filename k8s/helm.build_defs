@@ -5,7 +5,7 @@ CONFIG.setdefault("HELM_TOOL", subrepo + "//tools/k8s:helm")
 
 def helm_package(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values.yaml", readme:str="README.md",
                   templates:str=None, tests:str=None, crds:str=None, helmignore:str=".helmignore", srcs:list=[],
-                  labels:list=[], visibility:list=None):
+                  labels:list=[], visibility:list=None, test_only:bool&testonly=False):
     """Packages a Helm chart into a versioned chart archive.
 
     Args:
@@ -20,6 +20,7 @@ def helm_package(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values.
       srcs (str): Additional source files of the chart (eg. custom config files).
       labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
+      test_only (bool): If true the rule is only visible to test targets.
     """
 
     assert chart_yaml, "Chart.yaml is required"
@@ -72,6 +73,7 @@ def helm_package(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values.
         tools = {"helm": [CONFIG.HELM_TOOL]},
         labels = labels,
         visibility = visibility,
+        test_only = test_only,
     )
 
 def helm_lint(name:str, chart:str, labels:list=[], visibility:list=None):
@@ -85,35 +87,89 @@ def helm_lint(name:str, chart:str, labels:list=[], visibility:list=None):
 
     return gentest(
         name = name,
-        test_cmd = f'"$DATA_HELM" lint "$DATA_CHART"',
         data = {
             "chart": [chart],
             "helm": [CONFIG.HELM_TOOL],
         },
+        test_cmd = f'"$DATA_HELM" lint "$DATA_CHART"',
         labels = labels,
         visibility = visibility,
         no_test_output = True,
     )
 
-def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None, run_tests:bool=False, timeout:str=None, labels:list=[], visibility:list=None):
-    """Packages a Helm chart into a versioned chart archive.
+def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None,
+                  kubeconfig:str=None, kube_context:str=None, kube_token:str=None, kube_apiserver:str=None,
+                  atomic:bool=True, run_tests:bool=False, debug:bool=False,
+                  labels:list=[], visibility:list=None,
+):
+    """Installs a Helm chart on a Kubernetes cluster to test its functionality.
 
     Args:
       name (str): Name of the rule.
+      chart (str): Helm chart package to test.
+      release_name (str): Release name for the installed chart. Chosen automatically if not given.
+      namespace (str): Kubernetes namespace where the chart will be installed. The namespace must already exist.
+      kubeconfig (str): Kubeconfig file.
+      kube_context (str): Name of the kubeconfig context to use.
+      kube_token (str): Bearer token used for authentication against the API server.
+      kube_apiserver (str): Kubernetes API server address.
+      atomic (bool): Delete the installation on failure.
+      run_tests (bool): Run tests defined in the chart. (Otherwise it just installs and uninstalls the chart)
+      debug (bool): Enable verbose output.
       labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
     """
 
+    data = {
+        "chart": [chart],
+        "helm": [CONFIG.HELM_TOOL],
+    }
+
+    helm_cmd = '"$DATA_HELM"'
+
+    if namespace:
+        helm_cmd += f' --namespace "{namespace}"'
+
+    if kubeconfig:
+        data["kubeconfig"] = [kubeconfig]
+
+        helm_cmd += ' --kubeconfig "$DATA_KUBECONFIG"'
+
+    if kube_context:
+        helm_cmd += f' --kube-context "{kube_context}"'
+
+    if kube_token:
+        helm_cmd += f' --kube-token "{kube_token}"'
+
+    if kube_apiserver:
+        helm_cmd += f' --kube-apiserver "{kube_apiserver}"'
+
+    if debug:
+        helm_cmd += " --debug"
+
+    release_name = release_name or name
+
+    install_cmd = f"{helm_cmd} install --wait"
+
+    if atomic:
+        install_cmd += " --atomic"
+
+    install_cmd += f' {release_name} "$DATA_CHART"'
+
+    test_cmd = [install_cmd]
+
+    if run_tests:
+        test_cmd += [f'{helm_cmd} test {release_name}']
+
+    test_cmd += [f'{helm_cmd} uninstall {release_name}']
+
     return build_rule(
         name = name,
-        data = {
-            "chart": [chart],
-            "helm": [CONFIG.HELM_TOOL],
-        },
-        test_cmd = " && ".join([
-            '"$DATA_HELM" install --wait --generate-name "$DATA_CHART"',
-            '"$DATA_HELM" uninstall --wait --generate-name "$DATA_CHART"',
-        ]),
+        data = data,
+        test_cmd = " && ".join(test_cmd),
         pass_env = ["KUBECONFIG"],
+        labels = labels,
+        visibility = visibility,
         test = True,
+        no_test_output = True,
     )
