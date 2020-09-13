@@ -3,6 +3,8 @@ subrepo = f"///{subrepo}" if subrepo else ""
 
 CONFIG.setdefault("HELM_TOOL", subrepo + "//tools/k8s:helm")
 
+# TODO: add version option
+# TODO: add app_version option
 def helm_package(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values.yaml", readme:str="README.md",
                   templates:str=None, tests:str=None, crds:str=None, helmignore:str=".helmignore", srcs:list=[],
                   labels:list=[], visibility:list=None, test_only:bool&testonly=False):
@@ -97,6 +99,7 @@ def helm_lint(name:str, chart:str, labels:list=[], visibility:list=None):
         no_test_output = True,
     )
 
+# TODO: add timeout option
 def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None,
                   kubeconfig:str=None, kube_context:str=None, kube_token:str=None, kube_apiserver:str=None,
                   atomic:bool=True, run_tests:bool=False, debug:bool=False,
