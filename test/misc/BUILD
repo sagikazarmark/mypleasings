@@ -58,3 +58,20 @@ for test_case in yaml_merge_test_cases:
     )
 
     i += 1
+
+sed(
+    name = "sed",
+    src = "testdata/sedinput",
+    out = "sedoutput",
+    command = "s/TEST/OK/g",
+)
+
+gentest(
+    name = "sed_test",
+    data = {
+        "actual": [":sed"],
+        "expected": ["testdata/sedoutput"],
+    },
+    test_cmd = 'diff "$DATA_EXPECTED" "$DATA_ACTUAL"',
+    no_test_output = True,
+)
