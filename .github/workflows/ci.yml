@@ -41,7 +41,7 @@ jobs:
     name: Build (MacOS)
     runs-on: macos-latest
     env:
-      PLZ_ARGS: -p --exclude kind
+      PLZ_ARGS: -p --exclude kind --exclude docker
 
     steps:
       - name: Set up Go
