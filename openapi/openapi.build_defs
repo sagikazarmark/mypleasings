@@ -44,11 +44,12 @@ def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_
         cmd = cmd,
         building_description = "Generating...",
         sandbox = False,
+        labels = labels,
         visibility = visibility,
         test_only = test_only,
     )
 
-def openapi_validate(name:str, spec:str, labels:list=[], visibility:list=None):
+def openapi_validate(name:str, spec:str, labels:list=[]):
     """Validates an OpenAPI specification.
 
     It uses the unofficial OpenAPI Generator under the hood: https://github.com/OpenAPITools/openapi-generator
@@ -57,7 +58,6 @@ def openapi_validate(name:str, spec:str, labels:list=[], visibility:list=None):
       name (str): Name of the rule.
       spec (str): OpenAPI specification.
       labels (list): Labels for this rule.
-      visibility (list): Visibility declaration of the rule.
     """
 
     return gentest(
@@ -66,5 +66,5 @@ def openapi_validate(name:str, spec:str, labels:list=[], visibility:list=None):
         test_cmd = f'docker run --rm -v "$TMP_DIR/$DATA:/build/$DATA" {CONFIG.OPENAPI_GENERATOR_IMAGE}:{CONFIG.OPENAPI_GENERATOR_VERSION} validate -i "/build/$DATA" --recommend',
         sandbox = False,
         no_test_output = True,
-        visibility = visibility,
+        labels = labels,
     )
