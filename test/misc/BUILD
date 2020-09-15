@@ -47,14 +47,10 @@ for test_case in yaml_merge_test_cases:
         pretty = test_case.get("pretty", False),
     )
 
-    gentest(
+    diff_test(
         name = f"yaml_merge{i}_test",
-        data = {
-            "actual": [f":yaml_merge{i}"],
-            "expected": [f"testdata/merged{i}.yaml"],
-        },
-        test_cmd = 'diff "$DATA_EXPECTED" "$DATA_ACTUAL"',
-        no_test_output = True,
+        expected = f"testdata/merged{i}.yaml",
+        actual = f":yaml_merge{i}",
     )
 
     i += 1
@@ -66,12 +62,8 @@ sed(
     command = "s/TEST/OK/g",
 )
 
-gentest(
+diff_test(
     name = "sed_test",
-    data = {
-        "actual": [":sed"],
-        "expected": ["testdata/sedoutput"],
-    },
-    test_cmd = 'diff "$DATA_EXPECTED" "$DATA_ACTUAL"',
-    no_test_output = True,
+    expected = "testdata/sedoutput",
+    actual = ":sed",
 )
