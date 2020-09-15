@@ -24,6 +24,14 @@ jq_binary(
     visibility = ["PUBLIC"],
 )
 
+CONFIG.setdefault("YQ_VERSION", "3.3.4")
+
+yq_binary(
+    name = "yq",
+    version = CONFIG.YQ_VERSION,
+    visibility = ["PUBLIC"],
+)
+
 # This is an exception, because semver is too general
 CONFIG.setdefault("SEMVER_TOOL_VERSION", "3.0.0")
 
