@@ -14,4 +14,5 @@ helm_e2e_test(
     chart = ":hello-world",
     kubeconfig = "//test/k8s:kubeconfig",
     run_tests = True,
+    labels = ["kind"],
 )
