@@ -12,3 +12,7 @@ go_binary(
     srcs = ["main.go"],
     deps = ["//test/go/lib:lib_compat"],
 )
+
+golangci_lint_config(
+    name = "golangci.yml",
+)

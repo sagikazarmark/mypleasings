@@ -59,7 +59,7 @@ def yaml_merge(name:str, srcs:list, out:str, overwrite:bool=False, append:bool=F
 CONFIG.setdefault("SED_TOOL", "sed")
 
 def sed(name:str, src:str, out:str, command:str,
-        labels:list=[], visibility:list=None, test_only:bool&testonly=False):
+        labels:list=[], visibility:list=None, test_only:bool&testonly=False, tag:str=None):
     """Send a file through sed.
 
     Args:
@@ -70,15 +70,18 @@ def sed(name:str, src:str, out:str, command:str,
       labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
+      tag (str): Tag applied to name; generates a private rule,
+                 for example name='a',tag='b' gives _a#b. Typically used for "private" rules.
     """
 
     assert src, "Input file is required"
     assert out, "Output is required"
 
-    return genrule(
+    return build_rule(
         name = name,
+        tag = tag,
         srcs = [src],
-        cmd = f'"$TOOLS_SED" {command} $SRCS > "$OUT"',
+        cmd = f'"$TOOLS_SED" "{command}" $SRCS > "$OUT"',
         outs = [out],
         tools = {"sed": [CONFIG.SED_TOOL]},
         labels = labels,

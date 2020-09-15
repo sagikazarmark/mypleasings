@@ -1,6 +1,6 @@
 filegroup(
     name = "go",
-    srcs = ["go.build_defs"],
+    srcs = ["go.build_defs", "misc.build_defs"],
     visibility = ["PUBLIC"],
 )
 
@@ -13,5 +13,11 @@ filegroup(
 filegroup(
     name = "compat",
     srcs = [":go", "compat.build_defs"],
+    visibility = ["PUBLIC"],
+)
+
+export_file(
+    name = "golangci.defaults.yaml",
+    src = "golangci.defaults.yaml",
     visibility = ["PUBLIC"],
 )
