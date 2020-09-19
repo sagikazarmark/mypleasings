@@ -103,8 +103,7 @@ def helm_lint(name:str, chart:str, labels:list=[], visibility:list=None):
 def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None,
                   kubeconfig:str=None, kube_context:str=None, kube_token:str=None, kube_apiserver:str=None,
                   atomic:bool=True, run_tests:bool=False, debug:bool=False,
-                  labels:list=[], visibility:list=None,
-):
+                  labels:list=[], visibility:list=None):
     """Installs a Helm chart on a Kubernetes cluster to test its functionality.
 
     Args:
