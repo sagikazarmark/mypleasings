@@ -1,7 +1,7 @@
 # Pleasings
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/sagikazarmark/mypleasings/CI?style=flat-square)](https://github.com/sagikazarmark/mypleasings/actions?query=workflow%3ACI)
-![Please Version](https://img.shields.io/badge/please%20version-%3E=15.3.1--beta.1-B879FF.svg?style=flat-square)
+![Please Version](https://img.shields.io/badge/please%20version-%3E=15.4.0-B879FF.svg?style=flat-square)
 
 **Addons & build rules for [Please](https://please.build).**
 
