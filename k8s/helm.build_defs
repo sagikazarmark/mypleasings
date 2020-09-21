@@ -179,12 +179,11 @@ def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None
     return gentest(
         name = name,
         data = data,
-        test_cmd = " && ".join(cmd) + f'; {helm_cmd} uninstall {release_name}',
+        test_cmd = f"trap '{helm_cmd} uninstall {release_name}' EXIT;" + " && ".join(cmd),
         pass_env = ["KUBECONFIG"],
         flaky = flaky,
         timeout = timeout,
         labels = labels,
         visibility = visibility,
         no_test_output = True,
-        exit_on_error = False,
     )
