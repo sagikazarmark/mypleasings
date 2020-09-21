@@ -103,6 +103,7 @@ def helm_lint(name:str, chart:str, labels:list=[], visibility:list=None):
 def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None,
                   kubeconfig:str=None, kube_context:str=None, kube_token:str=None, kube_apiserver:str=None,
                   atomic:bool=True, run_tests:bool=False, debug:bool=False,
+                  flaky:bool|int=0,
                   labels:list=[], visibility:list=None):
     """Installs a Helm chart on a Kubernetes cluster to test its functionality.
 
@@ -118,6 +119,7 @@ def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None
       atomic (bool): Delete the installation on failure.
       run_tests (bool): Run tests defined in the chart. (Otherwise it just installs and uninstalls the chart)
       debug (bool): Enable verbose output.
+      flaky (bool | int): If true the test will be marked as flaky and automatically retried.
       labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
     """
@@ -170,6 +172,7 @@ def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None
         data = data,
         test_cmd = cmd,
         pass_env = ["KUBECONFIG"],
+        flaky = flaky,
         labels = labels,
         visibility = visibility,
         no_test_output = True,
