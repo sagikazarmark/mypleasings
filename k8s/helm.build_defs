@@ -103,6 +103,7 @@ def helm_lint(name:str, chart:str, labels:list=[], visibility:list=None):
 def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None,
                   kubeconfig:str=None, kube_context:str=None, kube_token:str=None, kube_apiserver:str=None,
                   atomic:bool=True, run_tests:bool=False, debug:bool=False,
+                  flaky:bool|int=0, timeout:int=0,
                   labels:list=[], visibility:list=None):
     """Installs a Helm chart on a Kubernetes cluster to test its functionality.
 
@@ -118,6 +119,8 @@ def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None
       atomic (bool): Delete the installation on failure.
       run_tests (bool): Run tests defined in the chart. (Otherwise it just installs and uninstalls the chart)
       debug (bool): Enable verbose output.
+      flaky (bool | int): If true the test will be marked as flaky and automatically retried.
+      timeout (int): Length of time in seconds to allow the test to run for before killing it.
       labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
     """
@@ -156,22 +159,31 @@ def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None
     if atomic:
         install_cmd += " --atomic"
 
+    if timeout > 0:
+        install_cmd += f" --timeout {timeout}"
+
     install_cmd += f' {release_name} "$DATA_CHART"'
 
-    test_cmd = [install_cmd]
+    cmd = [install_cmd]
 
     if run_tests:
-        test_cmd += [f'{helm_cmd} test {release_name}']
+        test_cmd = f"{helm_cmd} test --logs"
 
-    test_cmd += [f'{helm_cmd} uninstall {release_name}']
+        if timeout > 0:
+            test_cmd += f" --timeout {timeout}"
 
-    return build_rule(
+        test_cmd += f" {release_name}"
+
+        cmd += [test_cmd]
+
+    return gentest(
         name = name,
         data = data,
-        test_cmd = " && ".join(test_cmd),
+        test_cmd = f"trap '{helm_cmd} uninstall {release_name}' EXIT;" + " && ".join(cmd),
         pass_env = ["KUBECONFIG"],
+        flaky = flaky,
+        timeout = timeout,
         labels = labels,
         visibility = visibility,
-        test = True,
         no_test_output = True,
     )

@@ -33,6 +33,28 @@ openapi_library(
 )
 ```
 
+## FAQ
+
+### Helm end2end tests are failing
+
+If you receive an error like the following:
+
+```
+Fail: //test/k8s/charts/hello-world:e2e   0 passed   0 skipped   0 failed   1 errored Took 350ms
+Error: TestFailed in e2e
+Test failed
+exit status 1
+Standard output:
+Error: Kubernetes cluster unreachable: Get "https://127.0.0.1:57414/version?timeout=32s": dial tcp 127.0.0.1:57414: connect: connection refused
+Error: Kubernetes cluster unreachable: Get "https://127.0.0.1:57414/version?timeout=32s": dial tcp 127.0.0.1:57414: connect: connection refused
+```
+
+Chances are your [KinD](https://github.com/kubernetes-sigs/kind) config has changed. Try rebuilding the kubeconfig:
+
+```bash
+./pleasew build --rebuild //test/k8s:kubeconfig
+```
+
 
 ## License
 
