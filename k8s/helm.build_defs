@@ -161,17 +161,17 @@ def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None
     test_cmd = [install_cmd]
 
     if run_tests:
-        test_cmd += [f'{helm_cmd} test {release_name}']
+        test_cmd += [f'{helm_cmd} test --logs {release_name}']
 
-    test_cmd += [f'{helm_cmd} uninstall {release_name}']
+    cmd = " && ".join(test_cmd) + f'; {helm_cmd} uninstall {release_name}'
 
-    return build_rule(
+    return gentest(
         name = name,
         data = data,
-        test_cmd = " && ".join(test_cmd),
+        test_cmd = cmd,
         pass_env = ["KUBECONFIG"],
         labels = labels,
         visibility = visibility,
-        test = True,
         no_test_output = True,
+        exit_on_error = False,
     )
