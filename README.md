@@ -55,6 +55,21 @@ Chances are your [KinD](https://github.com/kubernetes-sigs/kind) config has chan
 ./pleasew build --rebuild //test/k8s:kubeconfig
 ```
 
+### `sha256sum` rule doesn't work on MacOS
+
+Install the GNU coreutils for the `sha256sum` binary:
+
+```bash
+brew install coreutils
+```
+
+Or configure a custom tool:
+
+```
+[buildconfig]
+sha256sum-tool = //path/to/tools:sha256sum
+```
+
 
 ## License
 
