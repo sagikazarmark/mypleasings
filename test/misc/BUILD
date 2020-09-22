@@ -67,3 +67,15 @@ diff_test(
     expected = "testdata/sedoutput",
     actual = ":sed",
 )
+
+sha256sum(
+    name = "sha256sum",
+    srcs = ["testdata/sample1.yaml", "testdata/sample2.yaml"],
+    out = "checksums.txt",
+)
+
+diff_test(
+    name = "sha256sum_test",
+    expected = "testdata/sha256sumoutput",
+    actual = ":sha256sum",
+)
