@@ -49,6 +49,9 @@ jobs:
         with:
           go-version: 1.15
 
+      - name: Install GNU coreutils
+        run: brew install coreutils
+
       - name: Checkout code
         uses: actions/checkout@v2
 
