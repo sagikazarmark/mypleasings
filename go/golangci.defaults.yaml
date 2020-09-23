@@ -1,3 +1,7 @@
+run:
+    skip-dirs:
+        - plz-out
+
 linters-settings:
     gci:
         local-prefixes: IMPORT_PATH
