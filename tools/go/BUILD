@@ -18,7 +18,7 @@ gotestsum_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("MGA_VERSION", "0.2.1")
+CONFIG.setdefault("MGA_VERSION", "0.4.1")
 
 mga_binary(
     name = "mga",
