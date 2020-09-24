@@ -71,11 +71,16 @@ diff_test(
 sha256sum(
     name = "sha256sum",
     srcs = ["testdata/sample1.yaml", "testdata/sample2.yaml"],
-    out = "checksums.txt",
+    out = "sha256sum_checksums.txt",
 )
 
 diff_test(
     name = "sha256sum_test",
     expected = "testdata/sha256sumoutput",
     actual = ":sha256sum",
+)
+
+build_artifacts(
+    name = "artifacts",
+    artifacts = ["testdata/sample1.yaml", "testdata/sample2.yaml"],
 )

@@ -139,9 +139,8 @@ def diff_test(name:str, expected:str, actual:str, labels:list=[]):
 
 CONFIG.setdefault("SHA256SUM_TOOL", "sha256sum")
 
-# TODO: strip file names or move files to a temporary current directory
 def sha256sum(name:str, srcs:list, out:str,
-               labels:list=[], visibility:list=None, test_only:bool&testonly=False):
+               labels:list=[], visibility:list=None, test_only:bool&testonly=False, tag:str=None):
     """Calculates the SHA256 checksum of the source files.
 
     Requires GNU coreutils to be installed (or an alternative source for the checksum tool).
@@ -153,17 +152,58 @@ def sha256sum(name:str, srcs:list, out:str,
       labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
       test_only (bool): If true the rule is only visible to test targets.
+      tag (str): Tag applied to name; generates a private rule,
+                 for example name='a',tag='b' gives _a#b. Typically used for "private" rules.
     """
 
     assert len(srcs) > 0, "at least one source file is required"
     assert out, "Output is required"
 
-    return genrule(
+    return build_rule(
         name = name,
+        tag = tag,
         srcs = srcs,
         cmd = '"$TOOLS_SHA256SUM" $SRCS > "$OUT"',
         outs = [out],
         tools = {"sha256sum": [CONFIG.SHA256SUM_TOOL]},
+        labels = labels,
+        visibility = visibility,
+        test_only = test_only,
+    )
+
+# TODO: strip file names or move files to a temporary current directory for checksums
+def build_artifacts(name:str, artifacts:list, checksums:bool=True, checksums_out:str="checksums.txt",
+                    labels:list=[], visibility:list=None, test_only:bool&testonly=False):
+    """Combines build artifacts into a single filegroup and optionally calculates SHA256 checksums.
+
+    Args:
+      name (str): Name of the rule.
+      artifacts (str): Artifact files.
+      checksums (bool): Calculate SHA256 for the artifacts.
+      checksums_out (str): Checksum output file.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+      test_only (bool): If true the rule is only visible to test targets.
+    """
+
+    assert len(artifacts) > 0, "at least one artifact is required"
+
+    srcs = artifacts
+
+    if checksums:
+        assert checksums_out, "Output is required"
+
+        srcs += [sha256sum(
+            name = name,
+            tag = "checksums",
+            srcs = artifacts,
+            out = checksums_out,
+            labels = labels,
+        )]
+
+    return filegroup(
+        name = name,
+        srcs = srcs,
         labels = labels,
         visibility = visibility,
         test_only = test_only,
