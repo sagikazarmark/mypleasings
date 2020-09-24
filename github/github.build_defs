@@ -34,7 +34,7 @@ fi
 
 """
 
-    cmd += f"$(out_location {CONFIG.GH_TOOL}) release create"
+    cmd += f"$(out_exe {CONFIG.GH_TOOL}) release create"
 
     if repo:
         cmd += f" --repo {repo}"

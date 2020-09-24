@@ -224,7 +224,7 @@ def releaser_script(name:str, out:str=None, labels:list=[],
         deps = [CONFIG.SEMVER_TOOL],
         out = out,
         labels = labels,
-        cmd = f"\nTAG_PREFIX={CONFIG.RELEASE_TAG_PREFIX}\n" + f"TOOLS_SEMVER=$(out_location {CONFIG.SEMVER_TOOL})\n" + """
+        cmd = f"\nTAG_PREFIX={CONFIG.RELEASE_TAG_PREFIX}\n" + f"TOOLS_SEMVER=$(out_exe {CONFIG.SEMVER_TOOL})\n" + """
 set -o errexit -o pipefail
 
 # Global regex variables
