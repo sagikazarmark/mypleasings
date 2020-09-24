@@ -1,29 +1,63 @@
 subrepo = subrepo_name()
 subrepo = f"///{subrepo}" if subrepo else ""
 
-CONFIG.setdefault("HUB_TOOL", subrepo + "//tools/github:hub")
+CONFIG.setdefault("GH_TOOL", subrepo + "//tools/github:gh")
 
-def github_release(name:str, assets:list=[], labels:list=[], visibility:list=None):
+def github_release(name:str, repo:str=None, draft:bool=False, assets:list=[], notes:str=None,
+                   labels:list=[], visibility:list=None):
     """Generates a script for publishing a release on GitHub.
 
     Args:
       name (str): Name of the rule.
+      repo (str): Select another repository using the OWNER/REPO format.
+      draft (bool): Save the release as a draft instead of publishing it.
+                    Useful if you want to manually review releases before publishing.
       assets (list): List of release assets to be published with the release.
+      notes (str): Attach a notes to the release from a file or a build target.
       labels (list): Labels of this rule.
       visibility (list): Visibility declaration of the rule.
     """
 
-    cmd = f"$(out_location {CONFIG.HUB_TOOL}) release create"
+    srcs = {
+        "assets": assets,
+    }
 
-    for asset in assets:
-        cmd += f" -a $(out_location {asset})"
+    cmd = """
+TAG="\\\${0}"
 
-    cmd += " \\\${@}"
+# Validate tag
+if [[ "\\\$TAG" == "" ]]; then
+    echo "missing tag"
+
+    exit 1
+fi
+
+"""
+
+    cmd += f"$(out_location {CONFIG.GH_TOOL}) release create"
+
+    if repo:
+        cmd += f" --repo {repo}"
+
+    if draft:
+        cmd += " --draft"
+
+    if notes:
+        cmd += f' --notes-file "$SRCS_NOTES"'
+        srcs["notes"] = [notes]
+    else:
+        # This will result in the cli not being interactive
+        # See https://github.com/cli/cli/issues/1739
+        cmd += " --notes ''"
+
+    cmd += " --title \\\$TAG \\\$TAG $SRCS_ASSETS"
 
     return sh_cmd(
         name = name,
+        shell = "/usr/bin/env bash",
         cmd = cmd,
-        deps = [CONFIG.HUB_TOOL] + assets,
+        srcs = srcs,
+        deps = [CONFIG.GH_TOOL],
         visibility = visibility,
         labels = labels,
     )
