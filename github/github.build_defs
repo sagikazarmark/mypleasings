@@ -43,14 +43,17 @@ fi
         cmd += " --draft"
 
     if notes:
-        cmd += f' --notes-file "$SRCS_NOTES"'
+        cmd += f' --notes-file $(location {notes})'
         srcs["notes"] = [notes]
     else:
         # This will result in the cli not being interactive
         # See https://github.com/cli/cli/issues/1739
         cmd += " --notes ''"
 
-    cmd += " --title \\\$TAG \\\$TAG $SRCS_ASSETS"
+    cmd += " --title \\\$TAG \\\$TAG"
+
+    for asset in assets:
+        cmd += f" $(locations {asset})"
 
     return sh_cmd(
         name = name,
