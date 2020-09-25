@@ -114,30 +114,6 @@ def diff_test(name:str, expected:str, actual:str, labels:list=[]):
         labels = labels,
     )
 
-def diff_test(name:str, expected:str, actual:str, labels:list=[]):
-    """Compare two files to see if their contents match.
-
-    Args:
-      name (str): Name of the rule.
-      expected (str): File with expected content.
-      actual (str): File with actual content to be compared.
-      labels (list): Labels for this rule.
-    """
-
-    assert expected, "Expected file is required"
-    assert actual, "Actual file is required"
-
-    return gentest(
-        name = name,
-        data = {
-            "expected": [expected],
-            "actual": [actual],
-        },
-        test_cmd = 'diff "$DATA_EXPECTED" "$DATA_ACTUAL"',
-        no_test_output = True,
-        labels = labels,
-    )
-
 CONFIG.setdefault("SHA256SUM_TOOL", "sha256sum")
 
 def sha256sum(name:str, srcs:list, out:str,
