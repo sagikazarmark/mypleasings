@@ -43,7 +43,7 @@ fi
         cmd += " --draft"
 
     if notes:
-        cmd += f' --notes-file $(location {notes})'
+        cmd += f' --notes-file $(out_location {notes})'
         srcs["notes"] = [notes]
     else:
         # This will result in the cli not being interactive
@@ -53,7 +53,7 @@ fi
     cmd += " --title \\\$TAG \\\$TAG"
 
     for asset in assets:
-        cmd += f" $(locations {asset})"
+        cmd += f" $(out_locations {asset})"
 
     return sh_cmd(
         name = name,
