@@ -108,7 +108,8 @@ def diff_test(name:str, expected:str, actual:str, labels:list=[]):
             "expected": [expected],
             "actual": [actual],
         },
-        test_cmd = 'diff "$DATA_EXPECTED" "$DATA_ACTUAL"',
+        test_cmd = '"$TOOLS_DIFF" "$DATA_EXPECTED" "$DATA_ACTUAL"',
+        test_tools = {"diff": ["diff"]},
         no_test_output = True,
         labels = labels,
     )

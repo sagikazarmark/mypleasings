@@ -91,9 +91,9 @@ def helm_lint(name:str, chart:str, labels:list=[], visibility:list=None):
         name = name,
         data = {
             "chart": [chart],
-            "helm": [CONFIG.HELM_TOOL],
         },
-        test_cmd = f'"$DATA_HELM" lint "$DATA_CHART"',
+        test_cmd = f'"$TOOLS_HELM" lint "$DATA_CHART"',
+        test_tools = {"helm": [CONFIG.HELM_TOOL]},
         labels = labels,
         visibility = visibility,
         no_test_output = True,
@@ -127,10 +127,9 @@ def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None
 
     data = {
         "chart": [chart],
-        "helm": [CONFIG.HELM_TOOL],
     }
 
-    helm_cmd = '"$DATA_HELM"'
+    helm_cmd = '"$TOOLS_HELM"'
 
     if namespace:
         helm_cmd += f' --namespace "{namespace}"'
@@ -180,6 +179,7 @@ def helm_e2e_test(name:str, chart:str, release_name:str=None, namespace:str=None
         name = name,
         data = data,
         test_cmd = f"trap '{helm_cmd} uninstall {release_name}' EXIT;" + " && ".join(cmd),
+        test_tools = {"helm": [CONFIG.HELM_TOOL]},
         pass_env = ["KUBECONFIG"],
         flaky = flaky,
         timeout = timeout,
