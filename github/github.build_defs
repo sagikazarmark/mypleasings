@@ -23,7 +23,7 @@ def github_release(name:str, repo:str=None, draft:bool=False, assets:list=[], no
     }
 
     cmd = """
-TAG="\\\${0}"
+TAG="\\\${1}"
 
 # Validate tag
 if [[ "\\\$TAG" == "" ]]; then
