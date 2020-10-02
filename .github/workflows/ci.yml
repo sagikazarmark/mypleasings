@@ -10,8 +10,6 @@ jobs:
   build-linux:
     name: Build (Linux)
     runs-on: ubuntu-latest
-    env:
-      PLZ_ARGS: -p
 
     steps:
       - name: Set up Go
@@ -22,26 +20,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up Please
+        uses: sagikazarmark/setup-please-action@v0
+        with:
+          save-logs: 'true'
+
       - name: Start KinD cluster
         run: kind create cluster
 
       - name: Build
-        run: ./pleasew $PLZ_ARGS build //test/...
+        run: plz build //test/...
 
       - name: Test
-        run: ./pleasew $PLZ_ARGS test --log_file=plz-out/log/test.log //test/...
-
-      - name: Save please log output
-        uses: actions/upload-artifact@v1
-        with:
-          name: plz-log
-          path: plz-out/log
+        run: plz test --log_file=plz-out/log/test.log //test/...
 
   build-macos:
     name: Build (MacOS)
     runs-on: macos-latest
-    env:
-      PLZ_ARGS: -p --exclude kind --exclude docker
 
     steps:
       - name: Set up Go
@@ -55,14 +50,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up Please
+        uses: sagikazarmark/setup-please-action@v0
+        with:
+          save-logs: 'true'
+
       - name: Build
-        run: ./pleasew $PLZ_ARGS build //test/...
+        run: plz build --exclude kind --exclude docker //test/...
 
       - name: Test
-        run: ./pleasew $PLZ_ARGS test --log_file=plz-out/log/test.log //test/...
-
-      - name: Save please log output
-        uses: actions/upload-artifact@v1
-        with:
-          name: plz-log-macos
-          path: plz-out/log
+        run: plz test --exclude kind --exclude docker --log_file=plz-out/log/test.log //test/...
