@@ -53,10 +53,11 @@ jobs:
       - name: Set up Please
         uses: sagikazarmark/setup-please-action@v0
         with:
+          exclude: kind, docker
           save-logs: 'true'
 
       - name: Build
-        run: plz build --exclude kind --exclude docker //test/...
+        run: plz build //test/...
 
       - name: Test
-        run: plz test --exclude kind --exclude docker --log_file=plz-out/log/test.log //test/...
+        run: plz test --log_file=plz-out/log/test.log //test/...
