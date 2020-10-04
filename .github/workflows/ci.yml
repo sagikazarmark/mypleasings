@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  build-linux:
-    name: Build (Linux)
+  test-linux:
+    name: Test (Linux)
     runs-on: ubuntu-latest
 
     steps:
@@ -22,20 +22,15 @@ jobs:
 
       - name: Set up Please
         uses: sagikazarmark/setup-please-action@v0
-        with:
-          save-logs: 'true'
 
       - name: Start KinD cluster
         run: kind create cluster
 
-      - name: Build
-        run: plz build //test/...
-
       - name: Test
-        run: plz test --log_file=plz-out/log/test.log //test/...
+        run: plz test //test/...
 
-  build-macos:
-    name: Build (MacOS)
+  test-macos:
+    name: Test (MacOS)
     runs-on: macos-latest
 
     steps:
@@ -54,10 +49,6 @@ jobs:
         uses: sagikazarmark/setup-please-action@v0
         with:
           exclude: kind, docker
-          save-logs: 'true'
-
-      - name: Build
-        run: plz build //test/...
 
       - name: Test
-        run: plz test --log_file=plz-out/log/test.log //test/...
+        run: plz test //test/...
