@@ -24,7 +24,7 @@ protoc_gen_kit_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("BUF_VERSION", "0.21.0")
+CONFIG.setdefault("BUF_VERSION", "0.24.0")
 
 buf_binary(
     name = "buf",
