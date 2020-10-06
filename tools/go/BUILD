@@ -35,3 +35,12 @@ pkger_binary(
     labels = ["go"],
     visibility = ["PUBLIC"],
 )
+
+CONFIG.setdefault("GO_BINDATA_VERSION", "3.21.0")
+
+go_bindata_binary(
+    name = "go-bindata",
+    version = CONFIG.GO_BINDATA_VERSION,
+    labels = ["go"],
+    visibility = ["PUBLIC"],
+)
