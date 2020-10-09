@@ -5,14 +5,24 @@ go_build(
     deps = ["//test/go/lib"],
 )
 
-subinclude("//go:compat")
-
-go_binary(
-    name = "build_compat",
-    srcs = ["main.go"],
-    deps = ["//test/go/lib:lib_compat"],
-)
-
 golangci_lint_config(
     name = "golangci.yml",
+)
+
+go_bindata(
+    name = "bindata",
+    srcs = ["go.mod", ":golangci.yml"],
+    prefix = '$PKG',
+)
+
+go_binary(
+    name = "bindata_test_bin",
+    srcs = ["//test/go/bindata:main", ":bindata"],
+)
+
+gentest(
+    name = "bindata_test",
+    test_cmd = '"$DATA"',
+    data = [":bindata_test_bin"],
+    no_test_output = True,
 )

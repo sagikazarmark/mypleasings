@@ -1,6 +1,6 @@
 filegroup(
     name = "go",
-    srcs = ["go.build_defs", "misc.build_defs"],
+    srcs = ["go.build_defs", "embed.build_defs", "misc.build_defs"],
     visibility = ["PUBLIC"],
 )
 
