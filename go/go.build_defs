@@ -1,6 +1,6 @@
 _GO_ENV_VARS = ["GOPATH", "GOCACHE", "GODEBUG", "GOENV", "GOFLAGS", "GOINSECURE", "GOPROXY", "GOPRIVATE", "GONOPROXY", "GONOSUMDB", "GOSUMDB", "CGO_ENABLED"]
 
-def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
+def go_build(name:str, out:str=None, deps:list=[], exported_deps:list=[], visibility:list=None,
              test_only:bool&testonly=False, definitions:str|list|dict=None, stamp:bool=False,
              tags:list=[], trimpath:bool=False, pass_env:list=[], labels:list=[]):
     """Compiles a go binary.
@@ -9,6 +9,7 @@ def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
       name (str): Name of the rule.
       out (str): Name of the output file to create. Defaults to the same as `name`.
       deps (list): Dependencies
+      exported_deps (list): Dependencies exported before building
       visibility (list): Visibility of the rule.
       test_only (bool): If True, is only visible to test rules.
       definitions (str | list | dict): If set to a string, defines importpath.name=value
@@ -23,7 +24,7 @@ def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
                        Any changes to them will be recorded in this target's hash and will hence force it to rebuild.
       labels (list): Labels of this rule.
     """
-    cmds, tools = _go_build_cmds("build", "", definitions, tags, trimpath)
+    cmds, tools = _go_build_cmds("build", "", definitions, tags, trimpath, exported_deps)
 
     return build_rule(
         name = name,
@@ -43,7 +44,7 @@ def go_build(name:str, out:str=None, deps:list=[], visibility:list=None,
         labels = labels + ["go"],
     )
 
-def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=None,
+def go_testx(name:str, srcs:list, deps:list=[], exported_deps:list=[], data:list=[], visibility:list=None,
              flags:str="", sandbox:bool=None, timeout:int=0, flaky:bool|int=0,
              test_outputs:list=None, labels:list&features&tags=[], size:str=None,
              tags:list=[], pass_env:list=[]):
@@ -53,6 +54,7 @@ def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=No
       name (str): Name of the rule.
       srcs (list): Go source files. Only used for determining if the target changed.
       deps (list): Dependencies
+      exported_deps (list): Dependencies exported before building
       data (list): Runtime data files for the test.
       visibility (list): Visibility of the rule.
       flags (str): Flags to apply to the test invocation.
@@ -66,7 +68,7 @@ def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=No
       pass_env (list): List of environment variables to be passed from outside.
                        Any changes to them will be recorded in this target's hash and will hence force it to rebuild.
     """
-    cmds, tools = _go_build_cmds("test", "-c", None, tags, False)
+    cmds, tools = _go_build_cmds("test", "-c", None, tags, False, exported_deps)
 
     if flags.count("-test.v ") == 0 and not flags.endswith("-test.v"):
         flags += " -test.v"
@@ -96,7 +98,7 @@ def go_testx(name:str, srcs:list, deps:list=[], data:list=[], visibility:list=No
         requires = ["go", "test"],
     )
 
-def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:list=[], trimpath:bool):
+def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:list=[], trimpath:bool, exported_deps:list=[]):
     """Returns the commands to run for compiling a Go binary."""
 
     flags = f"{cmd} {args} -mod=readonly"
@@ -128,6 +130,9 @@ def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:li
         'cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR"',
         'eval $(HOME="$(eval echo ~$(whoami))" "$TOOLS_GO" env)',
     ]
+
+    if len(exported_deps) > 0:
+        prefix_cmds += ['please \\${PLZ_ARGS:-} --nolock -p export outputs -o $(pwd) ' + " ".join(exported_deps)]
 
     cmds = {
         'dbg': " && ".join(prefix_cmds + [f'"$TOOLS_GO" {flags} -gcflags \"all=-N -l\" -ldflags "{defs}" -o "$OUT"']),

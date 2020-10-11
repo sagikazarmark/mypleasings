@@ -3,6 +3,7 @@ subinclude("//go")
 go_build(
     name = "build",
     deps = ["//test/go/lib"],
+    exported_deps = [":bindata"],
 )
 
 golangci_lint_config(
