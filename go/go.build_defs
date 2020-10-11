@@ -29,7 +29,7 @@ def go_build(name:str, out:str=None, deps:list=[], export_deps:list=[], visibili
     return build_rule(
         name = name,
         srcs = glob(["*.go"], exclude = ["*_test.go"]),
-        deps = deps,
+        deps = deps + export_deps,
         outs = [out or name],
         cmd = cmds,
         tools = tools,
@@ -76,7 +76,7 @@ def go_testx(name:str, srcs:list, deps:list=[], export_deps:list=[], data:list=[
     return build_rule(
         name = name,
         srcs = srcs,
-        deps = deps,
+        deps = deps + export_deps,
         outs = [name+".testbin"],
         cmd = cmds,
         tools = tools,
