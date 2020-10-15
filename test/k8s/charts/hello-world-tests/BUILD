@@ -3,30 +3,36 @@ subinclude("//k8s")
 helm_package(
     name = "hello-world-all",
     chart_yaml = "Chart.yaml",
-    values_yaml = "values.yaml",
+    helmignore = ".helmignore",
     readme = "README.md",
     templates = filegroup(
         name = "hello-world-all",
+        srcs = glob(
+            ["templates/**"],
+            exclude = [
+                "templates/tests",
+                "templates/tests/**",
+            ],
+        ),
         tag = "templates",
-        srcs = glob(["templates/**"], exclude = ["templates/tests", "templates/tests/**"]),
     ),
     tests = filegroup(
         name = "hello-world-all",
-        tag = "tests",
         srcs = glob(["templates/tests/**"]),
+        tag = "tests",
     ),
-    helmignore = ".helmignore",
+    values_yaml = "values.yaml",
 )
 
 helm_package(
-   name = "hello-world-values",
-   values_yaml = "//test/k8s/charts/hello-world-tests/values:values.yaml",
+    name = "hello-world-values",
+    values_yaml = "//test/k8s/charts/hello-world-tests/values:values.yaml",
 )
 
 helm_package(
-   name = "hello-world-templates",
-   templates = "//test/k8s/charts/hello-world-tests/templates2",
-   tests = "//test/k8s/charts/hello-world-tests/templates2/tests",
+    name = "hello-world-templates",
+    templates = "//test/k8s/charts/hello-world-tests/templates2",
+    tests = "//test/k8s/charts/hello-world-tests/templates2/tests",
 )
 
 helm_package(

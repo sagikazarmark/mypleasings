@@ -1,7 +1,7 @@
 genrule(
     name = "tests",
     srcs = glob(["*"]),
-    cmd = 'cp -a $PKG/. $OUT',
     outs = ["out"],
+    cmd = "cp -a $PKG/. $OUT",
     visibility = ["//test/k8s/charts/hello-world-tests/..."],
 )

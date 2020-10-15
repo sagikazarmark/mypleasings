@@ -4,8 +4,8 @@ CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.31.0")
 
 golangci_lint_binary(
     name = "golangci-lint",
-    version = CONFIG.GOLANGCI_LINT_VERSION,
     labels = ["go"],
+    version = CONFIG.GOLANGCI_LINT_VERSION,
     visibility = ["PUBLIC"],
 )
 
@@ -13,8 +13,8 @@ CONFIG.setdefault("GOTESTSUM_VERSION", "0.5.3")
 
 gotestsum_binary(
     name = "gotestsum",
-    version = CONFIG.GOTESTSUM_VERSION,
     labels = ["go"],
+    version = CONFIG.GOTESTSUM_VERSION,
     visibility = ["PUBLIC"],
 )
 
@@ -22,8 +22,8 @@ CONFIG.setdefault("MGA_VERSION", "0.4.1")
 
 mga_binary(
     name = "mga",
-    version = CONFIG.MGA_VERSION,
     labels = ["go"],
+    version = CONFIG.MGA_VERSION,
     visibility = ["PUBLIC"],
 )
 
@@ -31,8 +31,8 @@ CONFIG.setdefault("PKGER_VERSION", "0.17.1")
 
 pkger_binary(
     name = "pkger",
-    version = CONFIG.PKGER_VERSION,
     labels = ["go"],
+    version = CONFIG.PKGER_VERSION,
     visibility = ["PUBLIC"],
 )
 
@@ -40,7 +40,7 @@ CONFIG.setdefault("GO_BINDATA_VERSION", "3.21.0")
 
 go_bindata_binary(
     name = "go-bindata",
-    version = CONFIG.GO_BINDATA_VERSION,
     labels = ["go"],
+    version = CONFIG.GO_BINDATA_VERSION,
     visibility = ["PUBLIC"],
 )

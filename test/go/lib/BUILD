@@ -8,9 +8,11 @@ filegroup(
 
 go_testx(
     name = "test",
-    srcs = [":lib", "lib_test.go"],
+    srcs = [
+        "lib_test.go",
+        ":lib",
+    ],
 )
-
 
 subinclude("//go:compat")
 
@@ -22,5 +24,8 @@ go_library(
 
 go_test(
     name = "test_compat",
-    srcs = [":lib_compat", "lib_test.go"],
+    srcs = [
+        "lib_test.go",
+        ":lib_compat",
+    ],
 )

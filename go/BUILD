@@ -1,6 +1,10 @@
 filegroup(
     name = "go",
-    srcs = ["go.build_defs", "embed.build_defs", "misc.build_defs"],
+    srcs = [
+        "embed.build_defs",
+        "go.build_defs",
+        "misc.build_defs",
+    ],
     visibility = ["PUBLIC"],
 )
 
@@ -12,7 +16,10 @@ filegroup(
 
 filegroup(
     name = "compat",
-    srcs = [":go", "compat.build_defs"],
+    srcs = [
+        "compat.build_defs",
+        ":go",
+    ],
     visibility = ["PUBLIC"],
 )
 

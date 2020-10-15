@@ -40,17 +40,17 @@ for test_case in yaml_merge_test_cases:
         name = f"yaml_merge{i}",
         srcs = ["testdata/sample1.yaml", "testdata/sample2.yaml"],
         out = f"merged{i}.yaml",
-        overwrite = test_case.get("overwrite", False),
         append = test_case.get("append", False),
         indent = test_case.get("indent", None),
         json = test_case.get("json", False),
+        overwrite = test_case.get("overwrite", False),
         pretty = test_case.get("pretty", False),
     )
 
     diff_test(
         name = f"yaml_merge{i}_test",
-        expected = f"testdata/merged{i}.yaml",
         actual = f":yaml_merge{i}",
+        expected = f"testdata/merged{i}.yaml",
     )
 
     i += 1
@@ -64,23 +64,29 @@ sed(
 
 diff_test(
     name = "sed_test",
-    expected = "testdata/sedoutput",
     actual = ":sed",
+    expected = "testdata/sedoutput",
 )
 
 sha256sum(
     name = "sha256sum",
-    srcs = ["testdata/sample1.yaml", "testdata/sample2.yaml"],
+    srcs = [
+        "testdata/sample1.yaml",
+        "testdata/sample2.yaml",
+    ],
     out = "sha256sum_checksums.txt",
 )
 
 diff_test(
     name = "sha256sum_test",
-    expected = "testdata/sha256sumoutput",
     actual = ":sha256sum",
+    expected = "testdata/sha256sumoutput",
 )
 
 build_artifacts(
     name = "artifacts",
-    artifacts = ["testdata/sample1.yaml", "testdata/sample2.yaml"],
+    artifacts = [
+        "testdata/sample1.yaml",
+        "testdata/sample2.yaml",
+    ],
 )

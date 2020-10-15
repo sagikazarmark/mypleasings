@@ -2,8 +2,8 @@ subinclude("//github")
 
 genrule(
     name = "asset",
-    cmd = 'echo asset > "$OUT"',
     out = "asset",
+    cmd = 'echo asset > "$OUT"',
 )
 
 github_release(
@@ -13,17 +13,23 @@ github_release(
 
 genrule(
     name = "notes",
-    cmd = 'echo notes > "$OUT"',
     out = "notes",
+    cmd = 'echo notes > "$OUT"',
 )
 
 filegroup(
     name = "assets",
-    srcs = [":asset", ":notes"],
+    srcs = [
+        ":asset",
+        ":notes",
+    ],
 )
 
 github_release(
     name = "publish_advanced",
-    assets = [":assets", ":asset"],
+    assets = [
+        ":assets",
+        ":asset",
+    ],
     notes = ":notes",
 )
