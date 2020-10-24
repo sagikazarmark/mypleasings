@@ -16,6 +16,14 @@ protoc_gen_go_binary(
     visibility = ["PUBLIC"],
 )
 
+CONFIG.setdefault("PROTOC_GEN_GO_GRPC_VERSION", "1.0.1")
+
+protoc_gen_go_grpc_binary(
+    name = "protoc-gen-go-grpc",
+    version = CONFIG.PROTOC_GEN_GO_GRPC_VERSION,
+    visibility = ["PUBLIC"],
+)
+
 CONFIG.setdefault("PROTOC_GEN_KIT_VERSION", "0.2.0")
 
 protoc_gen_kit_binary(

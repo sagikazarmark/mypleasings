@@ -35,6 +35,43 @@ def protoc_gen_go_binary(name:str, version:str, hashes:list=None, out:str="", la
         test_only = test_only,
     )
 
+def protoc_gen_go_grpc_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
+                              visibility:list=None, test_only:bool&testonly=False, host:bool=True):
+    """Downloads a precompiled protoc-gen-go-grpc binary.
+
+    Args:
+      name (str): Name of the rule.
+      version (str): Version of the binary to download.
+      hashes (list): Hashes to verify the download against.
+      out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+      test_only (bool): If true the rule is only visible to test targets.
+      host (bool): If true the rule will always target the host OS and Arch.
+    """
+
+    os = CONFIG.HOSTOS if host else CONFIG.OS
+    arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
+
+    return genrule(
+        name = name,
+        srcs = [remote_file(
+            name = name,
+            _tag = "download",
+            url = f"https://github.com/grpc/grpc-go/releases/download/cmd%2Fprotoc-gen-go-grpc%2Fv{version}/protoc-gen-go-grpc.v{version}.{os}.{arch}.tar.gz",
+            hashes = hashes,
+            out = f"protoc-gen-go-grpc-{version}-{os}-{arch}.tar.gz",
+            labels = labels,
+        )],
+        outs = [out or "protoc-gen-go-grpc"],
+        binary = True,
+        cmd = '"$TOOL" x "$SRCS" protoc-gen-go-grpc -o tmp && mv $(find tmp -name "protoc-gen-go-grpc") "$OUT"',
+        tools = [CONFIG.JARCAT_TOOL],
+        labels = labels,
+        visibility = visibility,
+        test_only = test_only,
+    )
+
 def protoc_gen_kit_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                           visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled protoc-gen-kit binary.
