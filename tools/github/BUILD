@@ -8,7 +8,7 @@ hub_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("GH_VERSION", "1.0.0")
+CONFIG.setdefault("GH_VERSION", "1.1.0")
 
 gh_binary(
     name = "gh",

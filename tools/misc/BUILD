@@ -1,6 +1,6 @@
 subinclude("//misc:tools")
 
-CONFIG.setdefault("LICENSEI_VERSION", "0.2.0")
+CONFIG.setdefault("LICENSEI_VERSION", "0.3.1")
 
 licensei_binary(
     name = "licensei",
@@ -8,7 +8,7 @@ licensei_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("MIGRATE_VERSION", "4.12.2")
+CONFIG.setdefault("MIGRATE_VERSION", "4.13.0")
 
 migrate_binary(
     name = "migrate",
@@ -24,7 +24,7 @@ jq_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("YQ_VERSION", "3.3.4")
+CONFIG.setdefault("YQ_VERSION", "3.4.1")
 
 yq_binary(
     name = "yq",

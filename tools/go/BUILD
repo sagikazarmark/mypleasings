@@ -9,7 +9,7 @@ golangci_lint_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("GOTESTSUM_VERSION", "0.5.3")
+CONFIG.setdefault("GOTESTSUM_VERSION", "0.5.4")
 
 gotestsum_binary(
     name = "gotestsum",
@@ -18,7 +18,7 @@ gotestsum_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("MGA_VERSION", "0.4.1")
+CONFIG.setdefault("MGA_VERSION", "0.4.2")
 
 mga_binary(
     name = "mga",
