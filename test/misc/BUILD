@@ -6,11 +6,11 @@ yaml_merge_test_cases = [
         "overwrite": True,
     },
     {
-        "append": True,
+        "arrays": "append",
     },
     {
         "overwrite": True,
-        "append": True,
+        "arrays": "append",
     },
     {
         "pretty": True,
@@ -40,7 +40,7 @@ for test_case in yaml_merge_test_cases:
         name = f"yaml_merge{i}",
         srcs = ["testdata/sample1.yaml", "testdata/sample2.yaml"],
         out = f"merged{i}.yaml",
-        append = test_case.get("append", False),
+        arrays = test_case.get("arrays", ""),
         indent = test_case.get("indent", None),
         json = test_case.get("json", False),
         overwrite = test_case.get("overwrite", False),

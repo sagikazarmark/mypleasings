@@ -3,7 +3,7 @@ subrepo = f"///{subrepo}" if subrepo else ""
 
 CONFIG.setdefault("YQ_TOOL", subrepo + "//tools/misc:yq")
 
-def yaml_merge(name:str, srcs:list, out:str, overwrite:bool=False, append:bool=False,
+def yaml_merge(name:str, srcs:list, out:str, overwrite:bool=False, arrays:str=None, comments:str=None,
                indent:int=None, json:bool=False, pretty:bool=False,
                labels:list=[], visibility:list=None, test_only:bool&testonly=False):
     """Merges one or more YAML files.
@@ -13,7 +13,8 @@ def yaml_merge(name:str, srcs:list, out:str, overwrite:bool=False, append:bool=F
       srcs (str): YAML source files.
       out (str): Final YAML file output.
       overwrite (bool): Overwrite existing values using the values from each additional yaml file.
-      append (bool): Merge existing arrays from each additional yaml file.
+      arrays (str): Array merge strategy (update/append/overwrite).
+      comments (str): Comments merge strategy (update/append/overwrite).
       json (bool): Output the result as JSON.
       pretty (bool): Pretty print the resulting JSON.
       labels (list): Labels for this rule.
@@ -29,8 +30,11 @@ def yaml_merge(name:str, srcs:list, out:str, overwrite:bool=False, append:bool=F
     if overwrite:
         cmd += " --overwrite"
 
-    if append:
-        cmd += " --append"
+    if arrays:
+        cmd += " --arrays " + arrays
+
+    if comments:
+        cmd += " --comments " + comments
 
     if indent:
         assert indent > 2, "indent level needs to be at least 2"
