@@ -1,3 +1,6 @@
+subrepo = subrepo_name()
+subrepo = f"///{subrepo}" if subrepo else ""
+
 CONFIG.setdefault("OPENAPI_GENERATOR_IMAGE", "openapitools/openapi-generator-cli")
 CONFIG.setdefault("OPENAPI_GENERATOR_VERSION", "v4.3.1")
 
@@ -64,6 +67,29 @@ def openapi_validate(name:str, spec:str, labels:list=[]):
         name = name,
         data = [spec],
         test_cmd = f'docker run --rm -v "$TMP_DIR/$DATA:/build/$DATA" {CONFIG.OPENAPI_GENERATOR_IMAGE}:{CONFIG.OPENAPI_GENERATOR_VERSION} validate -i "/build/$DATA" --recommend',
+        sandbox = False,
+        no_test_output = True,
+        labels = labels,
+    )
+
+CONFIG.setdefault("SPECTRAL_TOOL", subrepo + "//tools/openapi:spectral")
+
+def spectral_lint(name:str, spec:str, labels:list=[]):
+    """Lints an OpenAPI specification using Spectral.
+
+    https://github.com/stoplightio/spectral
+
+    Args:
+      name (str): Name of the rule.
+      spec (str): OpenAPI specification.
+      labels (list): Labels for this rule.
+    """
+
+    return gentest(
+        name = name,
+        data = [spec],
+        test_cmd = '"$TOOLS_SPECTRAL" lint "$DATA"',
+        test_tools = {"spectral": [CONFIG.SPECTRAL_TOOL]},
         sandbox = False,
         no_test_output = True,
         labels = labels,

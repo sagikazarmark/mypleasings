@@ -26,3 +26,16 @@ openapi_validate(
     labels = ["docker"],
     spec = ":spec",
 )
+
+remote_file(
+    name = "openapi_3_1",
+    hashes = ["28ea3039742c17a45bdfbf4557a7bdd44717eee82f822a5d8ed28b364538dc50"],
+    labels = ["manual"],
+    licences = ["Apache-2.0"],
+    url = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/f8449d1a893cc6a811c6f3d87e88b05761dc5397/examples/v3.1/webhook-example.json",
+)
+
+spectral_lint(
+    name = "lint",
+    spec = ":openapi_3_1",
+)

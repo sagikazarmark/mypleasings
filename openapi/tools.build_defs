@@ -22,7 +22,6 @@ def spectral_binary(name:str, version:str, hashes:list=None, out:str="", labels:
 
     return remote_file(
         name = name,
-        _tag = "download",
         url = f"https://github.com/stoplightio/spectral/releases/download/v{version}/spectral-{download_os}",
         hashes = hashes,
         out = out or "spectral",
