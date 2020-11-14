@@ -29,3 +29,7 @@ go_test(
         ":lib_compat",
     ],
 )
+
+gotestsum_test(
+    name = "gotest",
+)

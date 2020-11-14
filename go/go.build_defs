@@ -1,3 +1,6 @@
+subrepo = subrepo_name()
+subrepo = f"///{subrepo}" if subrepo else ""
+
 _GO_ENV_VARS = ["GOPATH", "GOCACHE", "GODEBUG", "GOENV", "GOFLAGS", "GOINSECURE", "GOPROXY", "GOPRIVATE", "GONOPROXY", "GONOSUMDB", "GOSUMDB", "CGO_ENABLED"]
 
 def go_build(name:str, out:str=None, deps:list=[], export_deps:list=[], visibility:list=None,
@@ -142,3 +145,35 @@ def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:li
     return cmds, {
         'go': [CONFIG.GO_TOOL],
     }
+
+CONFIG.setdefault("GOTESTSUM_TOOL", subrepo + "//tools/go:gotestsum")
+
+def gotestsum_test(name:str, visibility:list=None, timeout:int=0, flaky:bool|int=0,
+                   labels:list&features&tags=[], size:str=None, pass_env:list=[]):
+    """Defines a Go test rule for an entire module using gotestsum.
+
+    Args:
+      name (str): Name of the rule.
+      visibility (list): Visibility of the rule.
+      timeout (int): Timeout in seconds to allow the test to run for.
+      flaky (int | bool): True to mark the test as flaky, or an integer to specify how many reruns.
+      labels (list): Labels for this rule.
+      size (str): Test size (enormous, large, medium or small).
+      pass_env (list): List of environment variables to be passed from outside.
+                       Any changes to them will be recorded in this target's hash and will hence force it to rebuild.
+    """
+
+    return build_rule(
+        name = name,
+        pass_env = _GO_ENV_VARS + pass_env,
+        output_is_complete = True,
+        labels = labels + ["go"],
+        test = True,
+        test_cmd = f'cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR" && $TOOLS_GOTESTSUM --junitfile "$RESULTS_FILE"',
+        test_tools = {"gotestsum": [CONFIG.GOTESTSUM_TOOL]},
+        test_timeout = timeout,
+        size = size,
+        flaky = flaky,
+        visibility = visibility,
+        requires = ["go", "test"],
+    )
