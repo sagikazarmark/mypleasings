@@ -1,2 +1,5 @@
 [please]
 version = 15.7.1
+
+[go]
+importpath = github.com/sagikazarmark/mypleasings

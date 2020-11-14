@@ -169,7 +169,11 @@ def gotestsum_test(name:str, visibility:list=None, timeout:int=0, flaky:bool|int
         output_is_complete = True,
         labels = labels + ["go"],
         test = True,
-        test_cmd = f'cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR" && $TOOLS_GOTESTSUM --junitfile "$RESULTS_FILE"',
+        test_cmd = {
+            "opt": f'cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR" && $TOOLS_GOTESTSUM --junitfile "$RESULTS_FILE"',
+            "dbg": f'cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR" && $TOOLS_GOTESTSUM --junitfile "$RESULTS_FILE"',
+            "cover": f'cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR" && $TOOLS_GOTESTSUM --junitfile "$RESULTS_FILE" -- -covermode=atomic -coverprofile="$COVERAGE_FILE"'
+        },
         test_tools = {"gotestsum": [CONFIG.GOTESTSUM_TOOL]},
         test_timeout = timeout,
         size = size,
