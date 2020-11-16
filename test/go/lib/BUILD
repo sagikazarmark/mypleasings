@@ -32,4 +32,10 @@ go_test(
 
 gotestsum_test(
     name = "gotest",
+    race = True,
+)
+
+gotestsum_test(
+    name = "gotest_race",
+    race = True,
 )
