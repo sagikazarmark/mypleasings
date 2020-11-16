@@ -9,7 +9,7 @@ golangci_lint_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("GOTESTSUM_VERSION", "0.5.4")
+CONFIG.setdefault("GOTESTSUM_VERSION", "0.6.0")
 
 gotestsum_binary(
     name = "gotestsum",
