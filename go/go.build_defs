@@ -148,14 +148,15 @@ def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:li
 
 CONFIG.setdefault("GOTESTSUM_TOOL", subrepo + "//tools/go:gotestsum")
 
-def gotestsum_test(name:str, deps:list=None, race:bool=False, visibility:list=None, timeout:int=0, flaky:bool|int=0,
+def gotestsum_test(name:str, deps:list=None, race:bool=False, package_filter:str=None, visibility:list=None, timeout:int=0, flaky:bool|int=0,
                    labels:list&features&tags=[], size:str=None, pass_env:list=[]):
     """Defines a Go test rule for an entire module using gotestsum.
 
     Args:
       name (str): Name of the rule.
       deps (list): Dependencies
-      race (bool): Enable the race detector
+      race (bool): Enable the race detector.
+      package_filter (str): Optional package filter to test multiple packages at once.
       visibility (list): Visibility of the rule.
       timeout (int): Timeout in seconds to allow the test to run for.
       flaky (int | bool): True to mark the test as flaky, or an integer to specify how many reruns.
@@ -165,12 +166,20 @@ def gotestsum_test(name:str, deps:list=None, race:bool=False, visibility:list=No
                        Any changes to them will be recorded in this target's hash and will hence force it to rebuild.
     """
 
-    test_cmd = 'cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR" && $TOOLS_GOTESTSUM --junitfile "$RESULTS_FILE" -- {flags} ./...'
+    test_cmd = []
 
-    flags = []
+    # TODO: make this configuragle
+    test_cmd += ['cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR"']
+
+    test_cmd += ['$TOOLS_GOTESTSUM --junitfile "$RESULTS_FILE" -- {args}']
+
+    args = []
 
     if race:
-        flags += ["-race"]
+        args += ["-race"]
+
+    if package_filter:
+        args += [package_filter]
 
     return build_rule(
         name = name,
@@ -180,9 +189,9 @@ def gotestsum_test(name:str, deps:list=None, race:bool=False, visibility:list=No
         labels = labels + ["go"],
         test = True,
         test_cmd = {
-            "opt": test_cmd.format(flags = " ".join(flags)),
-            "dbg": test_cmd.format(flags = " ".join(flags)),
-            "cover": test_cmd.format(flags = " ".join(flags + ["-covermode=atomic", '-coverprofile="$COVERAGE_FILE"'])),
+            "opt": " && ".join(test_cmd).format(args = " ".join(args)),
+            "dbg": " && ".join(test_cmd).format(args = " ".join(args)),
+            "cover": " && ".join(test_cmd).format(args = " ".join(args + ["-covermode=atomic", '-coverprofile="$COVERAGE_FILE"'])),
         },
         test_tools = {"gotestsum": [CONFIG.GOTESTSUM_TOOL]},
         test_timeout = timeout,
