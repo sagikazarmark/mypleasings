@@ -195,7 +195,7 @@ def gotestsum_test(name:str, srcs:list, deps:list=None, race:bool=False, package
             "dbg": test_cmd.format(args = " ".join(args)),
             "cover": " && ".join([
                 test_cmd.format(args = " ".join(args + ["-covermode=atomic", '-coverprofile="$COVERAGE_FILE"'])),
-                ] + ['sed "s|{CONFIG.GO_IMPORT_PATH}||g" "$COVERAGE_FILE" > cover.tmp', 'mv cover.tmp "$COVERAGE_FILE"'] if CONFIG.GO_IMPORT_PATH else [],
+                ] + [f'sed "s|{CONFIG.GO_IMPORT_PATH}||g" "$COVERAGE_FILE" > cover.tmp', 'mv cover.tmp "$COVERAGE_FILE"'] if CONFIG.GO_IMPORT_PATH else [],
             ),
         },
         test_tools = {"gotestsum": [CONFIG.GOTESTSUM_TOOL]},
