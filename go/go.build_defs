@@ -148,12 +148,13 @@ def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:li
 
 CONFIG.setdefault("GOTESTSUM_TOOL", subrepo + "//tools/go:gotestsum")
 
-def gotestsum_test(name:str, deps:list=None, race:bool=False, package:str=".", visibility:list=None, timeout:int=0, flaky:bool|int=0,
+def gotestsum_test(name:str, srcs:list, deps:list=None, race:bool=False, package:str=".", visibility:list=None, timeout:int=0, flaky:bool|int=0,
                    labels:list&features&tags=[], size:str=None, pass_env:list=[]):
     """Defines a Go test rule for an entire module using gotestsum.
 
     Args:
       name (str): Name of the rule.
+      srcs (list): Go source files. Only used for coverage.
       deps (list): Dependencies
       race (bool): Enable the race detector.
       package (str): Package to test.
@@ -180,6 +181,8 @@ def gotestsum_test(name:str, deps:list=None, race:bool=False, package:str=".", v
 
     args += [package]
 
+    test_cmd = " && ".join(test_cmd)
+
     return build_rule(
         name = name,
         deps = deps,
@@ -187,10 +190,14 @@ def gotestsum_test(name:str, deps:list=None, race:bool=False, package:str=".", v
         output_is_complete = True,
         labels = labels + ["go"],
         test = True,
+        test_srcs
         test_cmd = {
-            "opt": " && ".join(test_cmd).format(args = " ".join(args)),
-            "dbg": " && ".join(test_cmd).format(args = " ".join(args)),
-            "cover": " && ".join(test_cmd).format(args = " ".join(args + ["-covermode=atomic", '-coverprofile="$COVERAGE_FILE"'])),
+            "opt": test_cmd.format(args = " ".join(args)),
+            "dbg": test_cmd.format(args = " ".join(args)),
+            "cover": " && ".join([
+                test_cmd.format(args = " ".join(args + ["-covermode=atomic", '-coverprofile="$COVERAGE_FILE"'])),
+                ] + ['sed "s|{CONFIG.GO_IMPORT_PATH}||g" "$COVERAGE_FILE" > cover.tmp', 'mv cover.tmp "$COVERAGE_FILE"'] if CONFIG.GO_IMPORT_PATH else [],
+            ),
         },
         test_tools = {"gotestsum": [CONFIG.GOTESTSUM_TOOL]},
         test_timeout = timeout,
