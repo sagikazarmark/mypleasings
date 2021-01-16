@@ -148,7 +148,7 @@ def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:li
 
 CONFIG.setdefault("GOTESTSUM_TOOL", subrepo + "//tools/go:gotestsum")
 
-def gotestsum_test(name:str, deps:list=None, race:bool=False, package_filter:str=None, visibility:list=None, timeout:int=0, flaky:bool|int=0,
+def gotestsum_test(name:str, deps:list=None, race:bool=False, package:str=".", visibility:list=None, timeout:int=0, flaky:bool|int=0,
                    labels:list&features&tags=[], size:str=None, pass_env:list=[]):
     """Defines a Go test rule for an entire module using gotestsum.
 
@@ -156,7 +156,7 @@ def gotestsum_test(name:str, deps:list=None, race:bool=False, package_filter:str
       name (str): Name of the rule.
       deps (list): Dependencies
       race (bool): Enable the race detector.
-      package_filter (str): Optional package filter to test multiple packages at once.
+      package (str): Package to test.
       visibility (list): Visibility of the rule.
       timeout (int): Timeout in seconds to allow the test to run for.
       flaky (int | bool): True to mark the test as flaky, or an integer to specify how many reruns.
@@ -178,8 +178,7 @@ def gotestsum_test(name:str, deps:list=None, race:bool=False, package_filter:str
     if race:
         args += ["-race"]
 
-    if package_filter:
-        args += [package_filter]
+    args += [package]
 
     return build_rule(
         name = name,
