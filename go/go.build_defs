@@ -190,7 +190,6 @@ def gotestsum_test(name:str, srcs:list, deps:list=None, race:bool=False, package
         output_is_complete = True,
         labels = labels + ["go"],
         test = True,
-        test_srcs
         test_cmd = {
             "opt": test_cmd.format(args = " ".join(args)),
             "dbg": test_cmd.format(args = " ".join(args)),
