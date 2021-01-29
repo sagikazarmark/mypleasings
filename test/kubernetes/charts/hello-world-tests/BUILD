@@ -21,12 +21,12 @@ helm_package(
         srcs = glob(["templates/tests/**"]),
         tag = "tests",
     ),
-    values_yaml = "values.yaml",
+    values_file = "values.yaml",
 )
 
 helm_package(
     name = "hello-world-values",
-    values_yaml = "//test/kubernetes/charts/hello-world-tests/values:values.yaml",
+    values_file = "//test/kubernetes/charts/hello-world-tests/values:values.yaml",
 )
 
 helm_package(

@@ -5,7 +5,7 @@ CONFIG.setdefault("HELM_TOOL", subrepo + "//tools/kubernetes:helm")
 
 # TODO: add version option
 # TODO: add app_version option
-def helm_package(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values.yaml", readme:str="README.md",
+def helm_package(name:str, chart_yaml:str="Chart.yaml", values_file:str="values.yaml", readme:str="README.md",
                   templates:str=None, tests:str=None, crds:str=None, helmignore:str=".helmignore", srcs:list=[],
                   labels:list=[], visibility:list=None, test_only:bool&testonly=False):
     """Packages a Helm chart into a versioned chart archive.
@@ -13,7 +13,7 @@ def helm_package(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values.
     Args:
       name (str): Name of the rule.
       chart_yaml (str): Chart.yaml file of the chart.
-      values_yaml (str): values.yaml file of the chart.
+      values_file (str): values.yaml file of the chart.
       readme (str): Readme of the chart.
       templates (str): Template files of the chart.
       tests (str): Test files of the chart.
@@ -26,7 +26,7 @@ def helm_package(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values.
     """
 
     assert chart_yaml, "Chart.yaml is required"
-    assert values_yaml, "values.yaml is required"
+    assert values_file, "values.yaml is required"
     assert readme, "README.md is required"
 
     templates = templates or filegroup(
@@ -51,7 +51,7 @@ def helm_package(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values.
         name = name,
         srcs = {
             "chart_yaml": [chart_yaml],
-            "values_yaml": [values_yaml],
+            "values_file": [values_file],
             "readme": [readme],
             "templates": [templates],
             "tests": [tests],
@@ -62,7 +62,7 @@ def helm_package(name:str, chart_yaml:str="Chart.yaml", values_yaml:str="values.
         cmd = [
             "mkdir -p _plz-charts/%s/{templates,templates/tests,crds} _helm-out/" % (name),
             f'mv "$SRCS_CHART_YAML" _plz-charts/{name}/Chart.yaml',
-            f'mv "$SRCS_VALUES_YAML" _plz-charts/{name}/values.yaml',
+            f'mv "$SRCS_VALUES_FILE" _plz-charts/{name}/values.yaml',
             f'mv "$SRCS_README" _plz-charts/{name}/README.md',
             f'for src in $SRCS_TEMPLATES; do if [[ -d "$src" ]]; then mv "$src"/* _plz-charts/{name}/templates/; else mv "$src" _plz-charts/{name}/templates/; fi; done',
             f'for src in $SRCS_TESTS; do if [[ -d "$src" ]]; then mv "$src"/* _plz-charts/{name}/templates/tests/; else mv "$src" _plz-charts/{name}/templates/tests/; fi; done',
