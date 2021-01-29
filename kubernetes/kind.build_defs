@@ -1,7 +1,7 @@
 subrepo = subrepo_name()
 subrepo = f"///{subrepo}" if subrepo else ""
 
-CONFIG.setdefault("KIND_TOOL", subrepo + "//tools/k8s:kind")
+CONFIG.setdefault("KIND_TOOL", subrepo + "//tools/kubernetes:kind")
 
 def kind_kubeconfig(name:str, cluster_name:str=None, out:str=None,
                     labels:list=[], visibility:list=None, test_only:bool&testonly=False):

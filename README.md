@@ -40,7 +40,7 @@ openapi_library(
 If you receive an error like the following:
 
 ```
-Fail: //test/k8s/charts/hello-world:e2e   0 passed   0 skipped   0 failed   1 errored Took 350ms
+Fail: //test/kubernetes/charts/hello-world:e2e   0 passed   0 skipped   0 failed   1 errored Took 350ms
 Error: TestFailed in e2e
 Test failed
 exit status 1
@@ -52,7 +52,7 @@ Error: Kubernetes cluster unreachable: Get "https://127.0.0.1:57414/version?time
 Chances are your [KinD](https://github.com/kubernetes-sigs/kind) config has changed. Try rebuilding the kubeconfig:
 
 ```bash
-./pleasew build --rebuild //test/k8s:kubeconfig
+./pleasew build --rebuild //test/kubernetes:kubeconfig
 ```
 
 ### `sha256sum` rule doesn't work on MacOS

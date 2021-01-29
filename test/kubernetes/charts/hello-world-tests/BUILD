@@ -1,4 +1,4 @@
-subinclude("//k8s")
+subinclude("//kubernetes")
 
 helm_package(
     name = "hello-world-all",
@@ -26,13 +26,13 @@ helm_package(
 
 helm_package(
     name = "hello-world-values",
-    values_yaml = "//test/k8s/charts/hello-world-tests/values:values.yaml",
+    values_yaml = "//test/kubernetes/charts/hello-world-tests/values:values.yaml",
 )
 
 helm_package(
     name = "hello-world-templates",
-    templates = "//test/k8s/charts/hello-world-tests/templates2",
-    tests = "//test/k8s/charts/hello-world-tests/templates2/tests",
+    templates = "//test/kubernetes/charts/hello-world-tests/templates2",
+    tests = "//test/kubernetes/charts/hello-world-tests/templates2/tests",
 )
 
 helm_package(

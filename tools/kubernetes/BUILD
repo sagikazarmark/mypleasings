@@ -1,4 +1,4 @@
-subinclude("//k8s:tools")
+subinclude("//kubernetes:tools")
 
 CONFIG.setdefault("KUBECTL_VERSION", "1.19.3")
 

@@ -1,7 +1,7 @@
 subrepo = subrepo_name()
 subrepo = f"///{subrepo}" if subrepo else ""
 
-CONFIG.setdefault("HELM_TOOL", subrepo + "//tools/k8s:helm")
+CONFIG.setdefault("HELM_TOOL", subrepo + "//tools/kubernetes:helm")
 
 # TODO: add version option
 # TODO: add app_version option
