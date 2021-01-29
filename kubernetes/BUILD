@@ -1,5 +1,5 @@
 filegroup(
-    name = "k8s",
+    name = "kubernetes",
     srcs = [
         "helm.build_defs",
         "kind.build_defs",
