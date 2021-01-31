@@ -92,3 +92,46 @@ def helm_binary(name:str, version:str, hashes:list=None, out:str="", labels:list
         visibility = visibility,
         test_only = test_only,
     )
+
+def helm_docs_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
+                visibility:list=None, test_only:bool&testonly=False, host:bool=True):
+    """Downloads a precompiled helm-docs binary.
+
+    Args:
+      name (str): Name of the rule.
+      version (str): Version of the binary to download.
+      hashes (list): Hashes to verify the download against.
+      out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+      test_only (bool): If true the rule is only visible to test targets.
+      host (bool): If true the rule will always target the host OS and Arch.
+    """
+
+    os = CONFIG.HOSTOS if host else CONFIG.OS
+    arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
+
+    download_os = os.upper()
+    download_arch = arch
+
+    if arch == "amd64":
+        download_arch = "x86_64"
+
+    return genrule(
+        name = name,
+        srcs = [remote_file(
+            name = name,
+            _tag = "download",
+            url = f"https://github.com/norwoodj/helm-docs/releases/download/v{version}/helm-docs_{version}_{download_os}_{download_arch}.tar.gz",
+            hashes = hashes,
+            out = f"helm-docs-{version}-{os}-{arch}.tar.gz",
+            labels = labels,
+        )],
+        outs = [out or "helm-docs"],
+        binary = True,
+        cmd = '"$TOOL" x "$SRCS" helm-docs -o tmp && mv $(find tmp -name "helm-docs") "$OUT"',
+        tools = [CONFIG.JARCAT_TOOL],
+        labels = labels,
+        visibility = visibility,
+        test_only = test_only,
+    )

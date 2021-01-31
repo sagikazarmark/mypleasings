@@ -3,18 +3,15 @@ subrepo = f"///{subrepo}" if subrepo else ""
 
 CONFIG.setdefault("HELM_TOOL", subrepo + "//tools/kubernetes:helm")
 
-# TODO: add version option
-# TODO: add app_version option
-def helm_package(name:str, chart_yaml:str="Chart.yaml", values_file:str="values.yaml", readme:str="README.md",
-                  templates:str=None, tests:str=None, crds:str=None, helmignore:str=".helmignore", srcs:list=[],
-                  labels:list=[], visibility:list=None, test_only:bool&testonly=False):
-    """Packages a Helm chart into a versioned chart archive.
+def helm_chart(name:str, chart_yaml:str="Chart.yaml", values_file:str="values.yaml",
+               templates:str=None, tests:str=None, crds:str=None, helmignore:str=".helmignore", srcs:list=[],
+               labels:list=[], visibility:list=None, test_only:bool&testonly=False):
+    """Source files for a Helm chart.
 
     Args:
       name (str): Name of the rule.
       chart_yaml (str): Chart.yaml file of the chart.
       values_file (str): values.yaml file of the chart.
-      readme (str): Readme of the chart.
       templates (str): Template files of the chart.
       tests (str): Test files of the chart.
       crds (str): Custom Resource Definitions (CRDs) of the chart.
@@ -27,7 +24,6 @@ def helm_package(name:str, chart_yaml:str="Chart.yaml", values_file:str="values.
 
     assert chart_yaml, "Chart.yaml is required"
     assert values_file, "values.yaml is required"
-    assert readme, "README.md is required"
 
     templates = templates or filegroup(
         name = name,
@@ -47,32 +43,69 @@ def helm_package(name:str, chart_yaml:str="Chart.yaml", values_file:str="values.
         srcs = glob(["crds/**"]),
     )
 
+    srcs = [
+        chart_yaml,
+        values_file,
+        templates,
+        tests,
+        crds,
+    ] + srcs
+
+    if helmignore:
+        srcs += [helmignore]
+
+    return filegroup(
+        name = name,
+        srcs = srcs,
+        labels = labels,
+        visibility = visibility,
+        test_only = test_only,
+    )
+
+CONFIG.setdefault("HELM_DOCS_TOOL", subrepo + "//tools/kubernetes:helm-docs")
+
+# TODO: add support for ignore-file
+def helm_docs(name:str, chart_yaml:str="Chart.yaml", values_file:str="values.yaml", out:str="README.md",
+              templates:list=None, sort_values_order:str="alphanum",
+              labels:list=[], visibility:list=None, test_only:bool&testonly=False):
+    """Generate a readme file from values and chart info.
+
+    Args:
+      name (str): Name of the rule.
+      chart_yaml (str): Chart.yaml file of the chart.
+      values_file (str): values.yaml file of the chart.
+      out (str): Output name of the generated file.
+      templates (list): Template files of the chart.
+      sort_values_order (str): Order in which to sort the values table.
+                               ("alphanum" or "file") (default "alphanum")
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+      test_only (bool): If true the rule is only visible to test targets.
+    """
+
+    assert chart_yaml, "Chart.yaml is required"
+    assert values_file, "values.yaml is required"
+    assert sort_values_order == "alphanum" or sort_values_order == "file", "Valid values for sort_values_order are alphanum and file"
+
     return genrule(
         name = name,
         srcs = {
-            "chart_yaml": [chart_yaml],
-            "values_file": [values_file],
-            "readme": [readme],
-            "templates": [templates],
-            "tests": [tests],
-            "crds": [crds],
-            "helmignore": [helmignore],
-            "srcs": srcs,
+            "chart": [chart_yaml, values_file],
+            "templates": templates,
         },
         cmd = [
-            "mkdir -p _plz-charts/%s/{templates,templates/tests,crds} _helm-out/" % (name),
-            f'mv "$SRCS_CHART_YAML" _plz-charts/{name}/Chart.yaml',
-            f'mv "$SRCS_VALUES_FILE" _plz-charts/{name}/values.yaml',
-            f'mv "$SRCS_README" _plz-charts/{name}/README.md',
-            f'for src in $SRCS_TEMPLATES; do if [[ -d "$src" ]]; then mv "$src"/* _plz-charts/{name}/templates/; else mv "$src" _plz-charts/{name}/templates/; fi; done',
-            f'for src in $SRCS_TESTS; do if [[ -d "$src" ]]; then mv "$src"/* _plz-charts/{name}/templates/tests/; else mv "$src" _plz-charts/{name}/templates/tests/; fi; done',
-            f'for src in $SRCS_CRDS; do if [[ -d "$src" ]]; then mv "$src"/* _plz-charts/{name}/crds/; else mv "$src" _plz-charts/{name}/crds/; fi; done',
-            'for src in ${SRCS_SRCS-}; do if [[ -d "$src" ]]; then mv "$src"/* _plz-charts/%s/; else mv "$src" _plz-charts/%s/; fi; done' % (name, name),
-            f'mv "$SRCS_HELMIGNORE" _plz-charts/{name}/.helmignore',
-            f'"$TOOLS_HELM" package --destination _helm-out _plz-charts/{name}',
+            " ".join([
+                "$TOOLS_HELM_DOCS",
+                "--chart-search-root", '"$PKG"',
+                "--output-file", "_out",
+                "--sort-values-order", sort_values_order,
+                #"$(echo ${SRCS_TEMPLATES-} | awk -v pwd=$(pwd) 'BEGIN { RS=\" \" }  { print \"--template-files \" pwd\"/\"$1 }')",
+                '$(for t in ${SRCS_TEMPLATES-}; do echo --template-files "$(pwd)"/$t; done)'
+            ]),
+            'mv "$PKG"/_out "$OUT"',
         ],
-        output_dirs = [f"_helm-out"],
-        tools = {"helm": [CONFIG.HELM_TOOL]},
+        outs = [out],
+        tools = {"helm_docs": [CONFIG.HELM_DOCS_TOOL]},
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -92,11 +125,37 @@ def helm_lint(name:str, chart:str, labels:list=[], visibility:list=None):
         data = {
             "chart": [chart],
         },
-        test_cmd = f'"$TOOLS_HELM" lint "$DATA_CHART"',
+        test_cmd = f'"$TOOLS_HELM" lint "$PKG"',
         test_tools = {"helm": [CONFIG.HELM_TOOL]},
         labels = labels,
         visibility = visibility,
         no_test_output = True,
+    )
+
+# TODO: add version option
+# TODO: add app_version option
+def helm_package(name:str, chart:str, labels:list=[], visibility:list=None, test_only:bool&testonly=False):
+    """Packages a Helm chart into a chart archive.
+
+    Args:
+      name (str): Name of the rule.
+      chart (str): Helm chart package.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+      test_only (bool): If true the rule is only visible to test targets.
+    """
+
+    assert chart, "Chart is required"
+
+    return genrule(
+        name = name,
+        srcs = [chart],
+        cmd = '"$TOOLS_HELM" package --destination _helm-out "$PKG"',
+        output_dirs = ["_helm-out"],
+        tools = {"helm": [CONFIG.HELM_TOOL]},
+        labels = labels,
+        visibility = visibility,
+        test_only = test_only,
     )
 
 # TODO: add timeout option
