@@ -1,12 +1,16 @@
 subinclude("//kubernetes")
 
-helm_package(
-    name = "hello-world-all",
+filegroup(
+    name = "values.yaml",
+    srcs = ["values.yaml"],
+)
+
+helm_chart(
+    name = "chart-all",
     chart_yaml = "Chart.yaml",
     helmignore = ".helmignore",
-    readme = "README.md",
     templates = filegroup(
-        name = "hello-world-all",
+        name = "chart-all",
         srcs = glob(
             ["templates/**"],
             exclude = [
@@ -17,25 +21,15 @@ helm_package(
         tag = "templates",
     ),
     tests = filegroup(
-        name = "hello-world-all",
+        name = "chart-all",
         srcs = glob(["templates/tests/**"]),
         tag = "tests",
     ),
-    values_yaml = "values.yaml",
+    values_file = ":values.yaml",
+    srcs = ["README.md", "config.yaml"],
 )
 
 helm_package(
-    name = "hello-world-values",
-    values_yaml = "//test/kubernetes/charts/hello-world-tests/values:values.yaml",
-)
-
-helm_package(
-    name = "hello-world-templates",
-    templates = "//test/kubernetes/charts/hello-world-tests/templates2",
-    tests = "//test/kubernetes/charts/hello-world-tests/templates2/tests",
-)
-
-helm_package(
-    name = "hello-world-misc",
-    srcs = ["config.yaml"],
+    name = "hello-world-tests",
+    chart = ":chart-all",
 )

@@ -23,3 +23,11 @@ helm_binary(
     version = CONFIG.HELM_VERSION,
     visibility = ["PUBLIC"],
 )
+
+CONFIG.setdefault("HELM_DOCS_VERSION", "1.5.0")
+
+helm_docs_binary(
+    name = "helm-docs",
+    version = CONFIG.HELM_DOCS_VERSION,
+    visibility = ["PUBLIC"],
+)
