@@ -169,7 +169,10 @@ def gotestsum_test(name:str, deps:list=None, race:bool=False, package:str=".", v
     test_cmd = []
 
     # TODO: make this configuragle
-    test_cmd += ['cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR"']
+    test_cmd += [
+        'cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR"',
+        'eval $(HOME="$(eval echo ~$(whoami))" "$TOOLS_GO" env)',
+    ]
 
     test_cmd += ['$TOOLS_GOTESTSUM --junitfile "$RESULTS_FILE" -- {args}']
 
