@@ -200,7 +200,10 @@ def gotestsum_test(name:str, deps:list=None, race:bool=False, package:str=".", v
                 ] + [f'sed "s|{CONFIG.GO_IMPORT_PATH}/||g" "$COVERAGE_FILE" > cover.tmp', 'mv cover.tmp "$COVERAGE_FILE"'] if CONFIG.GO_IMPORT_PATH else [],
             ),
         },
-        test_tools = {"gotestsum": [CONFIG.GOTESTSUM_TOOL]},
+        test_tools = {
+            "gotestsum": [CONFIG.GOTESTSUM_TOOL],
+            "go": [CONFIG.GO_TOOL],
+        },
         test_timeout = timeout,
         size = size,
         flaky = flaky,
