@@ -44,3 +44,19 @@ go_bindata_binary(
     version = CONFIG.GO_BINDATA_VERSION,
     visibility = ["PUBLIC"],
 )
+
+CONFIG.setdefault("WOLLEMI_VERSION", "0.1.0")
+
+wollemi_binary(
+    name = "wollemi",
+    labels = ["go"],
+    version = CONFIG.WOLLEMI_VERSION,
+    visibility = ["PUBLIC"],
+)
+
+wollemi_wrapper(
+    name = "wollemi-wrapper",
+    binary = ":wollemi",
+    labels = ["go"],
+    visibility = ["PUBLIC"],
+)

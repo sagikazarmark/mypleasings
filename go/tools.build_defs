@@ -187,3 +187,65 @@ def go_bindata_binary(name:str, version:str, hashes:list=None, out:str="", label
         visibility = visibility,
         test_only = test_only,
     )
+
+def wollemi_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
+                   visibility:list=None, test_only:bool&testonly=False, host:bool=True):
+    """Downloads a precompiled wollemi binary.
+
+    Args:
+      name (str): Name of the rule.
+      version (str): Version of the binary to download.
+      hashes (list): Hashes to verify the download against.
+      out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+      test_only (bool): If true the rule is only visible to test targets.
+      host (bool): If true the rule will always target the host OS and Arch.
+    """
+
+    os = CONFIG.HOSTOS if host else CONFIG.OS
+    arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
+
+    return genrule(
+        name = name,
+        srcs = [remote_file(
+            name = name,
+            _tag = "download",
+            url = f"https://github.com/tcncloud/wollemi/releases/download/v{version}/wollemi-v{version}-{os}-{arch}.tar.gz",
+            hashes = hashes,
+            out = f"wollemi-{version}-{os}-{arch}.tar.gz",
+            labels = labels,
+        )],
+        outs = [out or "wollemi"],
+        binary = True,
+        cmd = '"$TOOL" x "$SRCS" wollemi -o tmp && mv $(find tmp -name "wollemi") "$OUT"',
+        tools = [CONFIG.JARCAT_TOOL],
+        labels = labels,
+        visibility = visibility,
+        test_only = test_only,
+    )
+
+def wollemi_wrapper(name:str, binary:str, out:str="", labels:list=[],
+                    visibility:list=None, test_only:bool&testonly=False):
+    """Wollemi wrapper script for running Wollemi with plz run.
+
+    Args:
+      name (str): Name of the rule.
+      binary (str): Wollemi binary target.
+      out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+      test_only (bool): If true the rule is only visible to test targets.
+    """
+
+    return genrule(
+        name = name,
+        outs = [out or "wollemi.sh"],
+        binary = True,
+        cmd = f"cat > \"$OUT\" << EOF\n#!/bin/sh\nexport GOROOT=$(\"$TOOLS_GO\" env GOROOT)\n$(out_exe {binary}) \\\\$@\nEOF\n",
+        tools = {"go": [CONFIG.GO_TOOL]},
+        deps = [binary],
+        labels = labels,
+        visibility = visibility,
+        test_only = test_only,
+    )
