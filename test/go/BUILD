@@ -6,15 +6,10 @@ go_build(
     deps = ["//test/go/lib"],
 )
 
-golangci_lint_config(
-    name = "golangci.yml",
-)
-
 go_bindata(
     name = "bindata",
     srcs = [
         "go.mod",
-        ":golangci.yml",
     ],
     prefix = "$PKG",
 )
