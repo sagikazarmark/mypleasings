@@ -113,7 +113,7 @@ def jq_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[
     )
 
 def yq_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
-                   visibility:list=None, test_only:bool&testonly=False, host:bool=True):
+              visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled yq binary.
 
     Args:
