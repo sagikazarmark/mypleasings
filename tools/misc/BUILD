@@ -1,5 +1,6 @@
 subinclude("//misc:tools")
 
+# https://github.com/goph/licensei/releases
 CONFIG.setdefault("LICENSEI_VERSION", "0.3.1")
 
 licensei_binary(
@@ -8,7 +9,8 @@ licensei_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("MIGRATE_VERSION", "4.13.0")
+# https://github.com/golang-migrate/migrate/releases
+CONFIG.setdefault("MIGRATE_VERSION", "4.14.1")
 
 migrate_binary(
     name = "migrate",
@@ -16,6 +18,7 @@ migrate_binary(
     visibility = ["PUBLIC"],
 )
 
+# https://github.com/stedolan/jq/releases/
 CONFIG.setdefault("JQ_VERSION", "1.6")
 
 jq_binary(
@@ -24,7 +27,8 @@ jq_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("YQ_VERSION", "3.4.1")
+# https://github.com/mikefarah/yq/releases
+CONFIG.setdefault("YQ_VERSION", "4.5.0")
 
 yq_binary(
     name = "yq",
@@ -32,8 +36,9 @@ yq_binary(
     visibility = ["PUBLIC"],
 )
 
-# This is an exception, because semver is too general
-CONFIG.setdefault("SEMVER_TOOL_VERSION", "3.0.0")
+# "TOOL" in config var name is an exception, because semver is too general
+# https://github.com/fsaintjacques/semver-tool/releases
+CONFIG.setdefault("SEMVER_TOOL_VERSION", "3.2.0")
 
 semver_script(
     name = "semver",
@@ -41,7 +46,8 @@ semver_script(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("FOSSA_VERSION", "1.1.0")
+# https://github.com/fossas/fossa-cli/releases
+CONFIG.setdefault("FOSSA_VERSION", "1.1.3")
 
 fossa_binary(
     name = "fossa",

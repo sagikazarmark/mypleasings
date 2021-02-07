@@ -1,6 +1,7 @@
 subinclude("//go:tools")
 
-CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.32.2")
+# https://github.com/golangci/golangci-lint/releases
+CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.36.0")
 
 golangci_lint_binary(
     name = "golangci-lint",
@@ -9,7 +10,8 @@ golangci_lint_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("GOTESTSUM_VERSION", "0.6.0")
+# https://github.com/gotestyourself/gotestsum/releases
+CONFIG.setdefault("GOTESTSUM_VERSION", "1.6.1")
 
 gotestsum_binary(
     name = "gotestsum",
@@ -18,6 +20,7 @@ gotestsum_binary(
     visibility = ["PUBLIC"],
 )
 
+# https://github.com/sagikazarmark/mga/releases
 CONFIG.setdefault("MGA_VERSION", "0.4.2")
 
 mga_binary(
@@ -27,6 +30,7 @@ mga_binary(
     visibility = ["PUBLIC"],
 )
 
+# https://github.com/markbates/pkger/releases
 CONFIG.setdefault("PKGER_VERSION", "0.17.1")
 
 pkger_binary(
@@ -36,7 +40,8 @@ pkger_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("GO_BINDATA_VERSION", "3.21.0")
+# https://github.com/kevinburke/go-bindata/releases
+CONFIG.setdefault("GO_BINDATA_VERSION", "3.22.0")
 
 go_bindata_binary(
     name = "go-bindata",
@@ -45,7 +50,8 @@ go_bindata_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("WOLLEMI_VERSION", "0.1.0")
+# https://github.com/tcncloud/wollemi/releases
+CONFIG.setdefault("WOLLEMI_VERSION", "0.2.1")
 
 wollemi_binary(
     name = "wollemi",

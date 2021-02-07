@@ -1,6 +1,7 @@
 subinclude("//openapi:tools")
 
-CONFIG.setdefault("SPECTRAL_VERSION", "5.7.1")
+# https://github.com/stoplightio/spectral/releases
+CONFIG.setdefault("SPECTRAL_VERSION", "5.8.0")
 
 spectral_binary(
     name = "spectral",

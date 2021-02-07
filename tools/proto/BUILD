@@ -1,6 +1,7 @@
 subinclude("//proto:tools")
 
-CONFIG.setdefault("PROTOC_VERSION", "3.13.0")
+# https://github.com/protocolbuffers/protobuf/releases
+CONFIG.setdefault("PROTOC_VERSION", "3.14.0")
 
 protoc_binary(
     name = "protoc",
@@ -8,6 +9,7 @@ protoc_binary(
     visibility = ["PUBLIC"],
 )
 
+# https://github.com/protocolbuffers/protobuf-go/releases
 CONFIG.setdefault("PROTOC_GEN_GO_VERSION", "1.25.0")
 
 protoc_gen_go_binary(
@@ -16,7 +18,8 @@ protoc_gen_go_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("PROTOC_GEN_GO_GRPC_VERSION", "1.0.1")
+# https://github.com/grpc/grpc-go/releases
+CONFIG.setdefault("PROTOC_GEN_GO_GRPC_VERSION", "1.1.1")
 
 protoc_gen_go_grpc_binary(
     name = "protoc-gen-go-grpc",
@@ -24,6 +27,7 @@ protoc_gen_go_grpc_binary(
     visibility = ["PUBLIC"],
 )
 
+# https://github.com/sagikazarmark/protoc-gen-kit/releases
 CONFIG.setdefault("PROTOC_GEN_KIT_VERSION", "0.2.0")
 
 protoc_gen_kit_binary(
@@ -32,7 +36,8 @@ protoc_gen_kit_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("BUF_VERSION", "0.28.0")
+# https://github.com/bufbuild/buf/releases
+CONFIG.setdefault("BUF_VERSION", "0.36.0")
 
 buf_binary(
     name = "buf",

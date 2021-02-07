@@ -1,5 +1,6 @@
 subinclude("//github:tools")
 
+# https://github.com/github/hub/releases
 CONFIG.setdefault("HUB_VERSION", "2.14.2")
 
 hub_binary(
@@ -8,7 +9,8 @@ hub_binary(
     visibility = ["PUBLIC"],
 )
 
-CONFIG.setdefault("GH_VERSION", "1.1.0")
+# https://github.com/cli/cli/releases
+CONFIG.setdefault("GH_VERSION", "1.5.0")
 
 gh_binary(
     name = "gh",
