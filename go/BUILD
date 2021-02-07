@@ -3,7 +3,6 @@ filegroup(
     srcs = [
         "embed.build_defs",
         "go.build_defs",
-        "misc.build_defs",
     ],
     visibility = ["PUBLIC"],
 )
@@ -20,11 +19,5 @@ filegroup(
         "compat.build_defs",
         ":go",
     ],
-    visibility = ["PUBLIC"],
-)
-
-export_file(
-    name = "golangci.defaults.yaml",
-    src = "golangci.defaults.yaml",
     visibility = ["PUBLIC"],
 )
