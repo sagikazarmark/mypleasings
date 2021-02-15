@@ -81,7 +81,7 @@ def go_bindata(name:str, srcs:list, out:str=None, prefix:str=None, pkg:str=None,
         outs = [out or "bindata.go"],
         cmd = " ".join(cmd),
         tools = [CONFIG.GO_BINDATA_TOOL],
-        labels = labels,
+        labels = labels + ["codegen"],
         visibility = visibility,
         test_only = test_only,
     )

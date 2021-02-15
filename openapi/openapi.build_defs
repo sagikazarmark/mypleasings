@@ -47,7 +47,7 @@ def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_
         cmd = cmd,
         building_description = "Generating...",
         sandbox = False,
-        labels = labels,
+        labels = labels + ["codegen"],
         visibility = visibility,
         test_only = test_only,
     )
