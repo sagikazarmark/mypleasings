@@ -7,7 +7,10 @@ helm_docs(
 helm_docs(
     name = "README2.md",
     out = "README2.md",
-    templates = ["README1.gotmpl.md", "README2.gotmpl.md"],
+    templates = [
+        "README1.gotmpl.md",
+        "README2.gotmpl.md",
+    ],
 )
 
 helm_chart(
