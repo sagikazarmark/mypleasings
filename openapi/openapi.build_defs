@@ -1,6 +1,7 @@
 subrepo = subrepo_name()
 subrepo = f"///{subrepo}" if subrepo else ""
 
+# https://github.com/openapitools/openapi-generator/releases
 CONFIG.setdefault("OPENAPI_GENERATOR_IMAGE", "openapitools/openapi-generator-cli")
 CONFIG.setdefault("OPENAPI_GENERATOR_VERSION", "v5.0.1")
 

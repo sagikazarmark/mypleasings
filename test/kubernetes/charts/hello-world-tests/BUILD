@@ -7,6 +7,10 @@ filegroup(
 
 helm_chart(
     name = "chart-all",
+    srcs = [
+        "README.md",
+        "config.yaml",
+    ],
     chart_yaml = "Chart.yaml",
     helmignore = ".helmignore",
     templates = filegroup(
@@ -26,7 +30,6 @@ helm_chart(
         tag = "tests",
     ),
     values_file = ":values.yaml",
-    srcs = ["README.md", "config.yaml"],
 )
 
 helm_package(

@@ -1,7 +1,7 @@
 subinclude("//kubernetes:tools")
 
 # https://github.com/kubernetes/kubectl/releases
-CONFIG.setdefault("KUBECTL_VERSION", "1.20.2")
+CONFIG.setdefault("KUBECTL_VERSION", "1.20.4")
 
 kubectl_binary(
     name = "kubectl",
@@ -27,7 +27,7 @@ helm_binary(
     visibility = ["PUBLIC"],
 )
 
-# https://github.com/helm/helm/releases
+# https://github.com/norwoodj/helm-docs/releases
 CONFIG.setdefault("HELM_DOCS_VERSION", "1.5.0")
 
 helm_docs_binary(
