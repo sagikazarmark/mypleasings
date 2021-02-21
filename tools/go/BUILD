@@ -1,7 +1,7 @@
 subinclude("//go:tools")
 
 # https://github.com/golangci/golangci-lint/releases
-CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.36.0")
+CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.37.1")
 
 golangci_lint_binary(
     name = "golangci-lint",
@@ -11,7 +11,7 @@ golangci_lint_binary(
 )
 
 # https://github.com/gotestyourself/gotestsum/releases
-CONFIG.setdefault("GOTESTSUM_VERSION", "1.6.1")
+CONFIG.setdefault("GOTESTSUM_VERSION", "1.6.2")
 
 gotestsum_binary(
     name = "gotestsum",

@@ -1,5 +1,5 @@
 [please]
-version = 15.14.0
+version = 15.16.0
 
 [go]
 importpath = github.com/sagikazarmark/mypleasings
