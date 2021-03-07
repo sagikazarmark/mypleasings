@@ -4,7 +4,7 @@ subrepo = f"///{subrepo}" if subrepo else ""
 CONFIG.setdefault("WARP_TOOL", subrepo + "//tools/packaging:warp")
 
 def warp_jar(name:str, jar:str, jre:str, out:str=None,
-             visibility:list=None, test_only:bool&testonly=False, labels:list=[]):
+             labels:list=[], visibility:list=None, test_only:bool&testonly=False):
     """Packages a JAR file and a JRE into a single executable.
 
     Args:
@@ -12,9 +12,9 @@ def warp_jar(name:str, jar:str, jre:str, out:str=None,
       jar (str): JAR file.
       jre (str): JRE (arch dependent).
       out (str): Name of the output file to create. Defaults to the same as `name`.
+      labels (list): Labels of this rule.
       visibility (list): Visibility of the rule.
       test_only (bool): If True, is only visible to test rules.
-      labels (list): Labels of this rule.
     """
 
     assert jar, "JAR file is required"
@@ -56,7 +56,7 @@ HERE=\\\\${BASH_SOURCE%/*}
         ]),
         tools = {"warp": [CONFIG.WARP_TOOL]},
         binary = True,
-        test_only = test_only,
-        visibility = visibility,
         labels = labels,
+        visibility = visibility,
+        test_only = test_only,
     )

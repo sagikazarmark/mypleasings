@@ -1,3 +1,40 @@
+subinclude("//java")
+
+def openapi_generator_warp(
+    name:str,
+    version:str,
+    jre:str,
+    hashes:list=None,
+    labels:list=[],
+    visibility:list=None,
+):
+    """OpenAPI Generator (https://github.com/OpenAPITools/openapi-generator) packed into a single executable.
+
+    Args:
+      name (str): Name of the rule.
+      version (str): Version of the JAR to download.
+      jre (str): JRE (arch dependent).
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+    """
+
+    assert jre, "JRE is required"
+
+    jar = remote_file(
+        name = name+"-jar",
+        url = f"https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/{version}/openapi-generator-cli-{version}.jar",
+        hashes = hashes,
+        out = name+".jar",
+    )
+
+    return warp_jar(
+        name = name,
+        jar = jar,
+        jre = jre,
+        labels = labels,
+        visibility = visibility,
+    )
+
 def openapi_generator_docker(
     name:str,
     image_name:str,
@@ -9,6 +46,8 @@ def openapi_generator_docker(
 
     Args:
       name (str): Name of the rule.
+      image_name (str): Container image name.
+      image_version (str): Container image version.
       labels (list): Labels for this rule.
       visibility (list): Visibility declaration of the rule.
     """
