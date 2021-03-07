@@ -75,6 +75,7 @@ if [[ -n \\\\$OUT && \\\\$OS == linux ]]; then
     sudo chown -R \\\\$(id -u).\\\\$(id -g) "\\\\$OUT"
 fi
 """.format(image_name = image_name, image_version = image_version),
+        shell = "/bin/bash",
         labels = labels,
         visibility = visibility,
     )
