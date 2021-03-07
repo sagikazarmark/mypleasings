@@ -1,3 +1,45 @@
+def openapi_generator_docker(
+    name:str,
+    image_name:str,
+    image_version:str,
+    labels:list=[],
+    visibility:list=None,
+):
+    """Shell script wrapper around the OpenAPI Generator (https://github.com/OpenAPITools/openapi-generator) Docker image.
+
+    Args:
+      name (str): Name of the rule.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+    """
+
+    return sh_cmd(
+        name = name,
+        cmd = """
+set -xe
+
+if [[ -n \\\\$SRC ]]; then
+    export WORKSPACE=\\\\$TMP_DIR/\\\\$SRC:/workspace/\\\\$SRC
+fi
+
+if [[ -n \\\\$DATA ]]; then
+    export WORKSPACE=\\\\$TMP_DIR/\\\\$DATA:/workspace/\\\\$DATA
+fi
+
+if [[ -n \\\\$OUT ]]; then
+    docker run --rm -v "\\\\$WORKSPACE" -v \\\\$OUT:\\\\$OUT -w /workspace {image_name}:{image_version} \\\\$@
+else
+    docker run --rm -v "\\\\$WORKSPACE" -w /workspace {image_name}:{image_version} \\\\$@
+fi
+
+if [[ -n \\\\$OUT && \\\\$OS == linux ]]; then
+    sudo chown -R \\\\$(id -u).\\\\$(id -g) "\\\\$OUT"
+fi
+""".format(image_name = image_name, image_version = image_version),
+        labels = labels,
+        visibility = visibility,
+    )
+
 def spectral_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
                     visibility:list=None, test_only:bool&testonly=False, host:bool=True):
     """Downloads a precompiled spectral binary.

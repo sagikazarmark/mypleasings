@@ -1,9 +1,7 @@
 subrepo = subrepo_name()
 subrepo = f"///{subrepo}" if subrepo else ""
 
-# https://github.com/openapitools/openapi-generator/releases
-CONFIG.setdefault("OPENAPI_GENERATOR_IMAGE", "openapitools/openapi-generator-cli")
-CONFIG.setdefault("OPENAPI_GENERATOR_VERSION", "v5.0.1")
+CONFIG.setdefault("OPENAPI_GENERATOR_TOOL", subrepo + "//tools/openapi:openapi-generator-docker")
 
 def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_properties:dict={}, deps:list=[],
                     labels:list=[], visibility:list=None, test_only:bool&testonly=False, strip:list=None):
@@ -27,7 +25,7 @@ def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_
 
     out = out or f"openapi/{name}"
 
-    main_cmd = f'docker run --rm -v "$TMP_DIR/$SRC:/build/$SRC" -v "$OUT:$OUT" {CONFIG.OPENAPI_GENERATOR_IMAGE}:{CONFIG.OPENAPI_GENERATOR_VERSION} generate -i "/build/$SRC" -o "$OUT" -g {generator}'
+    main_cmd = f'"$TOOLS_OPENAPI_GENERATOR" generate -i "/workspace/$SRC" -o "$OUT" -g {generator}'
 
     for key, value in additional_properties.items():
         main_cmd += f" --additional-properties {key}={value}"
@@ -46,6 +44,7 @@ def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_
         deps = deps,
         outs = [out],
         cmd = cmd,
+        tools = {"openapi_generator": [CONFIG.OPENAPI_GENERATOR_TOOL]},
         building_description = "Generating...",
         sandbox = False,
         labels = labels,
@@ -67,7 +66,8 @@ def openapi_validate(name:str, spec:str, labels:list=[]):
     return gentest(
         name = name,
         data = [spec],
-        test_cmd = f'docker run --rm -v "$TMP_DIR/$DATA:/build/$DATA" {CONFIG.OPENAPI_GENERATOR_IMAGE}:{CONFIG.OPENAPI_GENERATOR_VERSION} validate -i "/build/$DATA" --recommend',
+        test_cmd = '"$TOOLS_OPENAPI_GENERATOR" validate -i "/workspace/$DATA" --recommend',
+        test_tools = {"openapi_generator": [CONFIG.OPENAPI_GENERATOR_TOOL]},
         sandbox = False,
         no_test_output = True,
         labels = labels,
