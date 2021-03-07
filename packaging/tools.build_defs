@@ -1,0 +1,32 @@
+def warp_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[],
+                visibility:list=None, test_only:bool&testonly=False, host:bool=True):
+    """Downloads a precompiled spectral binary.
+
+    Args:
+      name (str): Name of the rule.
+      version (str): Version of the binary to download.
+      hashes (list): Hashes to verify the download against.
+      out (str): Output name of the binary. Chosen automatically if not given.
+      labels (list): Labels for this rule.
+      visibility (list): Visibility declaration of the rule.
+      test_only (bool): If true the rule is only visible to test targets.
+      host (bool): If true the rule will always target the host OS and Arch.
+    """
+
+    os = CONFIG.HOSTOS if host else CONFIG.OS
+
+    download_os = os
+
+    if os == "darwin":
+        download_os = "macos"
+
+    return remote_file(
+        name = name,
+        url = f"https://github.com/dgiagio/warp/releases/download/v{version}/{download_os}-x64.warp-packer",
+        hashes = hashes,
+        out = out or "warp",
+        binary = True,
+        labels = labels,
+        visibility = visibility,
+        test_only = test_only,
+    )
