@@ -30,9 +30,6 @@ def openapi_library(name:str, spec:str, generator:str, out:str=None, additional_
     for key, value in additional_properties.items():
         main_cmd += f" --additional-properties {key}={value}"
 
-    if CONFIG.HOSTOS == "linux": # We need to change ownership on linux, because the container runs as root
-        main_cmd += ' && sudo chown -R $(id -u).$(id -g) "$OUT"'
-
     cmd = [main_cmd]
 
     if strip:
