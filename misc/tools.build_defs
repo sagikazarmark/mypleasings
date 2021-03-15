@@ -26,10 +26,10 @@ def licensei_binary(name:str, version:str, hashes:list=None, out:str="", labels:
             _tag = "download",
             url = f"https://github.com/goph/licensei/releases/download/v{version}/licensei_{os}_{arch}.tar.gz",
             hashes = hashes,
-            out = f"licensei-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-licensei-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "licensei"],
+        outs = [out or name],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" licensei -o tmp && mv $(find tmp -name "licensei") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
@@ -63,10 +63,10 @@ def migrate_binary(name:str, version:str, hashes:list=None, out:str="", labels:l
             _tag = "download",
             url = f"https://github.com/golang-migrate/migrate/releases/download/v{version}/migrate.{os}-{arch}.tar.gz",
             hashes = hashes,
-            out = f"migrate-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-migrate-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "migrate"],
+        outs = [out or name],
         binary = True,
         cmd = f'"$TOOL" x "$SRCS" migrate -o tmp && mv $(find tmp -name "migrate.{os}-{arch}") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
@@ -93,10 +93,9 @@ def jq_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    download_os = os
-
-    if os == "darwin":
-        download_os = "osx"
+    download_os = {
+        "darwin": "osx",
+    }.get(os, os)
 
     return remote_file(
         name = name,
@@ -105,7 +104,7 @@ def jq_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[
             f"https://github.com/stedolan/jq/releases/download/jq-{version}/jq-{download_os}-amd64",
         ],
         hashes = hashes,
-        out = out or "jq",
+        out = out or name,
         binary = True,
         labels = labels,
         visibility = visibility,
@@ -137,7 +136,7 @@ def yq_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[
             name = name,
             url = f"https://github.com/mikefarah/yq/releases/download/{version}/yq_{os}_{arch}",
             hashes = hashes,
-            out = out or "yq",
+            out = out or name,
             binary = True,
             labels = labels,
             visibility = visibility,
@@ -151,10 +150,10 @@ def yq_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[
             _tag = "download",
             url = f"https://github.com/mikefarah/yq/releases/download/v{version}/yq_{os}_{arch}.tar.gz",
             hashes = hashes,
-            out = f"yq-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-yq-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "yq"],
+        outs = [out or name],
         binary = True,
         cmd = f'"$TOOL" x "$SRCS" yq -o tmp && mv $(find tmp -name "yq_{os}_{arch}") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
@@ -181,7 +180,7 @@ def semver_script(name:str, version:str, hashes:list=None, out:str="", labels:li
         name = name,
         url = f"https://raw.githubusercontent.com/fsaintjacques/semver-tool/{version}/src/semver",
         hashes = hashes,
-        out = out or "semver",
+        out = out or name,
         binary = True,
         labels = labels,
         visibility = visibility,
@@ -213,10 +212,10 @@ def fossa_binary(name:str, version:str, hashes:list=None, out:str="", labels:lis
             _tag = "download",
             url = f"https://github.com/fossas/fossa-cli/releases/download/v{version}/fossa-cli_{version}_{os}_{arch}.tar.gz",
             hashes = hashes,
-            out = f"fossa-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-fossa-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "fossa"],
+        outs = [out or name],
         binary = True,
         cmd = f'"$TOOL" x "$SRCS" fossa -o tmp && mv $(find tmp -name "fossa") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],

@@ -106,7 +106,7 @@ def spectral_binary(name:str, version:str, hashes:list=None, out:str="", labels:
         name = name,
         url = f"https://github.com/stoplightio/spectral/releases/download/v{version}/spectral-{download_os}",
         hashes = hashes,
-        out = out or "spectral",
+        out = out or name,
         binary = True,
         labels = labels,
         visibility = visibility,

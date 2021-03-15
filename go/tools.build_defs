@@ -23,10 +23,10 @@ def golangci_lint_binary(name:str, version:str, hashes:list=None, out:str="", la
             _tag = "download",
             url = f"https://github.com/golangci/golangci-lint/releases/download/v{version}/golangci-lint-{version}-{os}-{arch}.tar.gz",
             hashes = hashes,
-            out = f"golangci-lint-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-golangci-lint-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "golangci-lint"],
+        outs = [out or name],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" golangci-lint -o tmp && mv $(find tmp -name "golangci-lint") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
@@ -60,10 +60,10 @@ def gotestsum_binary(name:str, version:str, hashes:list=None, out:str="", labels
             _tag = "download",
             url = f"https://github.com/gotestyourself/gotestsum/releases/download/v{version}/gotestsum_{version}_{os}_{arch}.tar.gz",
             hashes = hashes,
-            out = f"gotestsum-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-gotestsum-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "gotestsum"],
+        outs = [out or name],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" gotestsum -o tmp && mv $(find tmp -name "gotestsum") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
@@ -97,10 +97,10 @@ def mga_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=
             _tag = "download",
             url = f"https://github.com/sagikazarmark/mga/releases/download/v{version}/mga_{os}_{arch}.tar.gz",
             hashes = hashes,
-            out = f"mga-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-mga-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "mga"],
+        outs = [out or name],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" mga -o tmp && mv $(find tmp -name "mga") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
@@ -127,11 +127,15 @@ def pkger_binary(name:str, version:str, hashes:list=None, out:str="", labels:lis
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    download_os = os[0].upper() + os[1:]
+    download_os = {
+        "linux": "Linux",
+        "darwin": "Darwin",
+    }.get(os, os)
+
     download_arch = {
         "amd64": "x86_64",
         "386": "i386",
-    }[arch]
+    }.get(arch, arch)
 
     return genrule(
         name = name,
@@ -140,10 +144,10 @@ def pkger_binary(name:str, version:str, hashes:list=None, out:str="", labels:lis
             _tag = "download",
             url = f"https://github.com/markbates/pkger/releases/download/v{version}/pkger_{version}_{download_os}_{download_arch}.tar.gz",
             hashes = hashes,
-            out = f"pkger-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-pkger-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "pkger"],
+        outs = [out or name],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" pkger -o tmp && mv $(find tmp -name "pkger") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
@@ -177,10 +181,10 @@ def go_bindata_binary(name:str, version:str, hashes:list=None, out:str="", label
             _tag = "download",
             url = f"https://github.com/kevinburke/go-bindata/releases/download/v{version}/go-bindata-{os}-{arch}",
             hashes = hashes,
-            out = f"go-bindata-{version}-{os}-{arch}",
+            out = f"{name}-go-bindata-{version}-{os}-{arch}",
             labels = labels,
         )],
-        outs = [out or "go-bindata"],
+        outs = [out or name],
         binary = True,
         cmd = 'mv "$SRCS" "$OUT"',
         labels = labels,
@@ -213,10 +217,10 @@ def wollemi_binary(name:str, version:str, hashes:list=None, out:str="", labels:l
             _tag = "download",
             url = f"https://github.com/tcncloud/wollemi/releases/download/v{version}/wollemi-v{version}-{os}-{arch}.tar.gz",
             hashes = hashes,
-            out = f"wollemi-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-wollemi-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "wollemi"],
+        outs = [out or name],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" wollemi -o tmp && mv $(find tmp -name "wollemi") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
@@ -240,7 +244,7 @@ def wollemi_wrapper(name:str, binary:str, out:str="", labels:list=[],
 
     return genrule(
         name = name,
-        outs = [out or "wollemi.sh"],
+        outs = [out or name],
         binary = True,
         cmd = f"cat > \"$OUT\" << EOF\n#!/bin/sh\nexport GOROOT=$(\"$TOOLS_GO\" env GOROOT)\n$(out_exe {binary}) \\\\$@\nEOF\n",
         tools = {"go": [CONFIG.GO_TOOL]},

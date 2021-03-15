@@ -23,10 +23,10 @@ def hub_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=
             _tag = "download",
             url = f"https://github.com/github/hub/releases/download/v{version}/hub-{os}-{arch}-{version}.tgz",
             hashes = hashes,
-            out = f"hub-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-hub-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "hub"],
+        outs = [out or name],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" hub -o tmp && mv $(find tmp -name "hub") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
@@ -53,10 +53,9 @@ def gh_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    download_os = os
-
-    if download_os == "darwin":
-        download_os = "macOS"
+    download_os = {
+        "darwin": "macOS",
+    }.get(os, os)
 
     return genrule(
         name = name,
@@ -65,10 +64,10 @@ def gh_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[
             _tag = "download",
             url = f"https://github.com/cli/cli/releases/download/v{version}/gh_{version}_{download_os}_{arch}.tar.gz",
             hashes = hashes,
-            out = f"gh-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-gh-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "gh"],
+        outs = [out or name],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" gh -o tmp && mv $(find tmp -name "gh") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
