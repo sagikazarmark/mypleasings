@@ -16,19 +16,20 @@ def hadolint_binary(name:str, version:str, hashes:list=None, out:str="", labels:
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    if os == "linux":
-        download_os = "Linux"
-    elif os == "darwin":
-        download_os = "Darwin"
+    download_os = {
+        "linux": "Linux",
+        "darwin": "Darwin",
+    }.get(os, os)
 
-    if arch == "amd64":
-        download_arch = "x86_64"
+    download_arch = {
+        "amd64": "x86_64",
+    }.get(arch, arch)
 
     return remote_file(
         name = name,
         url = f"https://github.com/hadolint/hadolint/releases/download/v{version}/hadolint-{download_os}-{download_arch}",
         hashes = hashes,
-        out = out or "hadolint",
+        out = out or name,
         binary = True,
         labels = labels,
         visibility = visibility,

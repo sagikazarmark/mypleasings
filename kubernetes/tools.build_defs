@@ -20,7 +20,7 @@ def kubectl_binary(name:str, version:str, hashes:list=None, out:str="", labels:l
         name = name,
         url = f"https://storage.googleapis.com/kubernetes-release/release/v{version}/bin/{os}/{arch}/kubectl",
         hashes = hashes,
-        out = out or "kubectl",
+        out = out or name,
         binary = True,
         labels = labels,
         visibility = visibility,
@@ -49,7 +49,7 @@ def kind_binary(name:str, version:str, hashes:list=None, out:str="", labels:list
         name = name,
         url = f"https://github.com/kubernetes-sigs/kind/releases/download/v{version}/kind-{os}-{arch}",
         hashes = hashes,
-        out = out or "kind",
+        out = out or name,
         binary = True,
         labels = labels,
         visibility = visibility,
@@ -81,10 +81,10 @@ def helm_binary(name:str, version:str, hashes:list=None, out:str="", labels:list
             _tag = "download",
             url = f"https://get.helm.sh/helm-v{version}-{os}-{arch}.tar.gz",
             hashes = hashes,
-            out = f"helm-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-helm-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "helm"],
+        outs = [out or name],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" helm -o tmp && mv $(find tmp -name "helm") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
@@ -111,11 +111,14 @@ def helm_docs_binary(name:str, version:str, hashes:list=None, out:str="", labels
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    download_os = os.upper()
-    download_arch = arch
+    download_os = {
+        "linux": "Linux",
+        "darwin": "Darwin",
+    }.get(os, os)
 
-    if arch == "amd64":
-        download_arch = "x86_64"
+    download_arch = {
+        "amd64": "x86_64",
+    }.get(arch, arch)
 
     return genrule(
         name = name,
@@ -124,10 +127,10 @@ def helm_docs_binary(name:str, version:str, hashes:list=None, out:str="", labels
             _tag = "download",
             url = f"https://github.com/norwoodj/helm-docs/releases/download/v{version}/helm-docs_{version}_{download_os}_{download_arch}.tar.gz",
             hashes = hashes,
-            out = f"helm-docs-{version}-{os}-{arch}.tar.gz",
+            out = f"{name}-helm-docs-{version}-{os}-{arch}.tar.gz",
             labels = labels,
         )],
-        outs = [out or "helm-docs"],
+        outs = [out or name],
         binary = True,
         cmd = '"$TOOL" x "$SRCS" helm-docs -o tmp && mv $(find tmp -name "helm-docs") "$OUT"',
         tools = [CONFIG.JARCAT_TOOL],
