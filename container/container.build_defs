@@ -1,0 +1,22 @@
+subrepo = subrepo_name()
+subrepo = f"///{subrepo}" if subrepo else ""
+
+CONFIG.setdefault("HADOLINT_TOOL", subrepo + "//tools/container:hadolint")
+
+def hadolint(name:str, dockerfile:str="Dockerfile", labels:list=[]):
+    """Defines a hadolint rule for a Dockerfile.
+
+    Args:
+      name (str): Name of the rule.
+      dockerfile (str): Dockerfile to lint.
+      labels (list): Labels for this rule.
+    """
+
+    return gentest(
+        name = name,
+        data = [dockerfile],
+        labels = labels,
+        test_cmd = '"$TOOLS_HADOLINT" "$DATA"',
+        test_tools = {"hadolint": [CONFIG.HADOLINT_TOOL]},
+        no_test_output = True,
+    )
