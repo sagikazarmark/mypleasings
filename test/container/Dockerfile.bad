@@ -1,0 +1,5 @@
+# Build image
+FROM golang:latest
+
+# Final image
+FROM alpine

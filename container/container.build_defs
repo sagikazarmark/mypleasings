@@ -3,20 +3,67 @@ subrepo = f"///{subrepo}" if subrepo else ""
 
 CONFIG.setdefault("HADOLINT_TOOL", subrepo + "//tools/container:hadolint")
 
-def hadolint(name:str, dockerfile:str="Dockerfile", labels:list=[]):
+def hadolint(name:str, dockerfile:str="Dockerfile", config:str=None, trusted_registries:list=[],
+             error:list=[], warning:list=[], info:list=[], style:list=[], ignore:list=[],
+             labels:list=[]):
     """Defines a hadolint rule for a Dockerfile.
 
     Args:
       name (str): Name of the rule.
       dockerfile (str): Dockerfile to lint.
+      config (str): Config file for the tool.
+      trusted_registries (list): List of registries to allow in FROM instructions.
+      error (list): List of rules to have the level `error`.
+      warning (list): List of rules to have the level `warning`.
+      info (list): List of rules to have the level `info`.
+      style (list): List of rules to have the level `style`.
+      ignore (list): A rule to ignore. If present, the ignore list in the
+                           config file is ignored.
       labels (list): Labels for this rule.
     """
 
+    cmd = ['"$TOOLS_HADOLINT"']
+
+    data = {
+        "dockerfile": dockerfile,
+    }
+
+    if config:
+        data["config"] = config
+
+        cmd += ["--config", '"$DATA_CONFIG"']
+
+    for r in trusted_registries:
+        r = r.replace('"', "")
+        cmd += ["--trusted-registry", f'"{r}"'] if r else []
+
+    for r in error:
+        r = r.replace('"', "")
+        cmd += ["--error", f'"{r}"']
+
+    for r in warning:
+        r = r.replace('"', "")
+        cmd += ["--warning", f'"{r}"']
+
+    for r in info:
+        r = r.replace('"', "")
+        cmd += ["--info", f'"{r}"']
+
+    for r in style:
+        r = r.replace('"', "")
+        cmd += ["--style", f'"{r}"']
+
+    for r in ignore:
+        r = r.replace('"', "")
+        cmd += ["--ignore", f'"{r}"']
+
+    cmd += ['"$DATA_DOCKERFILE"']
+
     return gentest(
         name = name,
-        data = [dockerfile],
-        labels = labels,
-        test_cmd = '"$TOOLS_HADOLINT" "$DATA"',
+        data = data,
+        test_cmd = " ".join(cmd),
         test_tools = {"hadolint": [CONFIG.HADOLINT_TOOL]},
         no_test_output = True,
+        labels = labels,
     )
