@@ -1,5 +1,5 @@
 [please]
-version = 16.0.0-prerelease.7
+version = 16.0.0-prerelease.9
 
 [go]
 importpath = github.com/sagikazarmark/mypleasings
