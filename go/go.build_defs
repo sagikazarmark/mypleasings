@@ -149,7 +149,7 @@ def _go_build_cmds(cmd:str, args:str="", definitions:str|list|dict=None, tags:li
 CONFIG.setdefault("GOTESTSUM_TOOL", subrepo + "//tools/go:gotestsum")
 
 def gotestsum_test(name:str, deps:list=None, race:bool=False, package:str=".", visibility:list=None, timeout:int=0, flaky:bool|int=0,
-                   labels:list&features&tags=[], size:str=None, pass_env:list=[]):
+                   labels:list&features&tags=[], size:str=None, pass_env:list=[], no_test_output:bool=False):
     """Defines a Go test rule for an entire module using gotestsum.
 
     Args:
@@ -164,17 +164,25 @@ def gotestsum_test(name:str, deps:list=None, race:bool=False, package:str=".", v
       size (str): Test size (enormous, large, medium or small).
       pass_env (list): List of environment variables to be passed from outside.
                        Any changes to them will be recorded in this target's hash and will hence force it to rebuild.
+      no_test_output (bool): Do write test output to the regular location. Useful for targets testing multiple packages.
     """
 
     test_cmd = []
 
     # TODO: make this configuragle
     test_cmd += [
-        'cd "$(pwd | sed "s/plz-out\/.*//")/$PKG_DIR"',
+        'export PLZ_ROOT_DIR="$(pwd | sed "s/plz-out\/.*//")"',
+        'cd "$PLZ_ROOT_DIR$PKG_DIR"',
         'eval $(HOME="$(eval echo ~$(whoami))" "$TOOLS_GO" env)',
     ]
 
-    test_cmd += ['$TOOLS_GOTESTSUM --junitfile "$RESULTS_FILE" -- {args}']
+    if no_test_output:
+        test_cmd += [
+            'export RESULTS_FILE="$PLZ_ROOT_DIR/plz-out/log/results.xml"',
+            'export COVERAGE_FILE="$PLZ_ROOT_DIR/plz-out/log/coverage.txt"',
+        ]
+
+    test_cmd += ['"$TOOLS_GOTESTSUM" --junitfile "$RESULTS_FILE" -- {args}']
 
     args = []
 
@@ -197,7 +205,7 @@ def gotestsum_test(name:str, deps:list=None, race:bool=False, package:str=".", v
             "dbg": test_cmd.format(args = " ".join(args)),
             "cover": " && ".join([
                 test_cmd.format(args = " ".join(args + ["-covermode=atomic", '-coverprofile="$COVERAGE_FILE"'])),
-                ] + [f'sed "s|{CONFIG.GO_IMPORT_PATH}/||g" "$COVERAGE_FILE" > cover.tmp', 'mv cover.tmp "$COVERAGE_FILE"'] if CONFIG.GO_IMPORT_PATH else [],
+                ] + ([f'sed "s|{CONFIG.GO_IMPORT_PATH}/||g" "$COVERAGE_FILE" > cover.tmp', 'mv cover.tmp "$COVERAGE_FILE"'] if (CONFIG.GO_IMPORT_PATH and not no_test_output) else []),
             ),
         },
         test_tools = {
@@ -208,5 +216,6 @@ def gotestsum_test(name:str, deps:list=None, race:bool=False, package:str=".", v
         size = size,
         flaky = flaky,
         visibility = visibility,
+        no_test_output = no_test_output,
         requires = ["go", "test"],
     )

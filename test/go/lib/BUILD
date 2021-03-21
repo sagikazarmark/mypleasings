@@ -39,3 +39,8 @@ gotestsum_test(
     name = "gotest_race",
     race = True,
 )
+
+gotestsum_test(
+    name = "gotest_no_output",
+    no_test_output = True,
+)
