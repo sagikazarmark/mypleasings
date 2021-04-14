@@ -1,7 +1,7 @@
 subinclude("//kubernetes:tools")
 
 # https://github.com/kubernetes/kubectl/releases
-CONFIG.setdefault("KUBECTL_VERSION", "1.20.4")
+CONFIG.setdefault("KUBECTL_VERSION", "1.21.0")
 
 kubectl_binary(
     name = "kubectl",
@@ -19,7 +19,7 @@ kind_binary(
 )
 
 # https://github.com/helm/helm/releases
-CONFIG.setdefault("HELM_VERSION", "3.5.2")
+CONFIG.setdefault("HELM_VERSION", "3.5.3")
 
 helm_binary(
     name = "helm",

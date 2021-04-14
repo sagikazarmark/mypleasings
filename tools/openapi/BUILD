@@ -1,7 +1,7 @@
 subinclude("//openapi:tools")
 
 # https://github.com/openapitools/openapi-generator/releases
-CONFIG.setdefault("OPENAPI_GENERATOR_VERSION", "5.0.1")
+CONFIG.setdefault("OPENAPI_GENERATOR_VERSION", "5.1.0")
 
 openapi_generator_warp(
     name = "openapi-generator-warp",
@@ -51,7 +51,7 @@ openapi_generator_docker(
 )
 
 # https://github.com/stoplightio/spectral/releases
-CONFIG.setdefault("SPECTRAL_VERSION", "5.8.1")
+CONFIG.setdefault("SPECTRAL_VERSION", "5.9.1")
 
 spectral_binary(
     name = "spectral",

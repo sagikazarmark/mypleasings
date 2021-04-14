@@ -28,7 +28,7 @@ jq_binary(
 )
 
 # https://github.com/mikefarah/yq/releases
-CONFIG.setdefault("YQ_VERSION", "4.6.0")
+CONFIG.setdefault("YQ_VERSION", "4.6.3")
 
 yq_binary(
     name = "yq",
@@ -47,7 +47,7 @@ semver_script(
 )
 
 # https://github.com/fossas/fossa-cli/releases
-CONFIG.setdefault("FOSSA_VERSION", "1.1.5")
+CONFIG.setdefault("FOSSA_VERSION", "1.1.7")
 
 fossa_binary(
     name = "fossa",
