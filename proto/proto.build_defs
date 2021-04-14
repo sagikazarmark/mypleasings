@@ -1,0 +1,59 @@
+def go_proto_language(plugins:dict={}, grpc:bool = False):
+    """Downloads a precompiled protoc-gen-go binary.
+
+    Args:
+      plugins (dict): List of plugins.
+      grpc (bool): Include gRPC in the list of plugins.
+    """
+
+    plugins["go"] = {
+        "tool": CONFIG.PROTOC_GO_PLUGIN,
+        "deps": [CONFIG.PROTO_GO_DEP],
+    }
+
+    if grpc and CONFIG.GRPC_GO_PLUGIN:
+        plugins["go-grpc"] = {
+            "tool": CONFIG.GRPC_GO_PLUGIN,
+            "deps": [CONFIG.GRPC_GO_DEP],
+        }
+
+    protoc_flags = []
+    tools = {}
+    deps = []
+
+    for name, plugin in plugins.items():
+        tool_name = name.replace("-", "_")
+
+        if isinstance(plugin, dict):
+            tools[tool_name] = [plugin.tool]
+            deps += plugin.deps
+        else:
+            tools[tool_name] = [plugin]
+
+        tool_name = tool_name.upper()
+
+        protoc_flags += [
+            f'--{name}_out="$OUT_DIR"',
+            f'--plugin=protoc-gen-{name}="`which $TOOLS_{tool_name}`"',
+            f'--{name}_opt=paths=source_relative',
+        ]
+
+    return proto_language(
+        language = 'go',
+        func = lambda name, srcs, deps, test_only: go_library(
+            name = name,
+            srcs = srcs,
+            package = _parent_rule(name),
+            deps = deps,
+            test_only = test_only,
+        ),
+        protoc_flags = protoc_flags,
+        tools = tools,
+        deps = deps,
+        provides = ["srcs"],
+    )
+
+def _parent_rule(name):
+    """Returns the parent rule, i.e. strips the leading _ and trailing #hashtag."""
+    before, _, _ = name.partition('#')
+    return before.lstrip('_')
