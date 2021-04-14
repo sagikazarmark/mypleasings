@@ -1,7 +1,7 @@
 subinclude("//go:tools")
 
 # https://github.com/golangci/golangci-lint/releases
-CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.37.1")
+CONFIG.setdefault("GOLANGCI_LINT_VERSION", "1.39.0")
 
 golangci_lint_binary(
     name = "golangci-lint",
@@ -11,7 +11,7 @@ golangci_lint_binary(
 )
 
 # https://github.com/gotestyourself/gotestsum/releases
-CONFIG.setdefault("GOTESTSUM_VERSION", "1.6.2")
+CONFIG.setdefault("GOTESTSUM_VERSION", "1.6.3")
 
 gotestsum_binary(
     name = "gotestsum",
@@ -51,7 +51,7 @@ go_bindata_binary(
 )
 
 # https://github.com/tcncloud/wollemi/releases
-CONFIG.setdefault("WOLLEMI_VERSION", "0.2.1")
+CONFIG.setdefault("WOLLEMI_VERSION", "0.6.0")
 
 wollemi_binary(
     name = "wollemi",

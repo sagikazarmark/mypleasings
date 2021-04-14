@@ -1,7 +1,7 @@
 subinclude("//proto:tools")
 
 # https://github.com/protocolbuffers/protobuf/releases
-CONFIG.setdefault("PROTOC_VERSION", "3.15.1")
+CONFIG.setdefault("PROTOC_VERSION", "3.15.8")
 
 protoc_binary(
     name = "protoc",
@@ -10,7 +10,7 @@ protoc_binary(
 )
 
 # https://github.com/protocolbuffers/protobuf-go/releases
-CONFIG.setdefault("PROTOC_GEN_GO_VERSION", "1.25.0")
+CONFIG.setdefault("PROTOC_GEN_GO_VERSION", "1.26.0")
 
 protoc_gen_go_binary(
     name = "protoc-gen-go",
@@ -37,7 +37,7 @@ protoc_gen_kit_binary(
 )
 
 # https://github.com/bufbuild/buf/releases
-CONFIG.setdefault("BUF_VERSION", "0.37.0")
+CONFIG.setdefault("BUF_VERSION", "0.41.0")
 
 buf_binary(
     name = "buf",
