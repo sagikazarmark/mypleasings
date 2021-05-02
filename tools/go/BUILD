@@ -11,7 +11,7 @@ golangci_lint_binary(
 )
 
 # https://github.com/gotestyourself/gotestsum/releases
-CONFIG.setdefault("GOTESTSUM_VERSION", "1.6.3")
+CONFIG.setdefault("GOTESTSUM_VERSION", "1.6.4")
 
 gotestsum_binary(
     name = "gotestsum",
@@ -51,7 +51,7 @@ go_bindata_binary(
 )
 
 # https://github.com/tcncloud/wollemi/releases
-CONFIG.setdefault("WOLLEMI_VERSION", "0.6.0")
+CONFIG.setdefault("WOLLEMI_VERSION", "0.7.0")
 
 wollemi_binary(
     name = "wollemi",
