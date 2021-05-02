@@ -16,20 +16,14 @@ def protoc_gen_go_binary(name:str, version:str, hashes:list=None, out:str="", la
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/protocolbuffers/protobuf-go/releases/download/v{version}/protoc-gen-go.v{version}.{os}.{arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-protoc-gen-go-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/protocolbuffers/protobuf-go/releases/download/v{version}/protoc-gen-go.v{version}.{os}.{arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = ["protoc-gen-go"],
         binary = True,
-        cmd = '"$TOOL" x "$SRCS" protoc-gen-go -o tmp && mv $(find tmp -name "protoc-gen-go") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -53,20 +47,14 @@ def protoc_gen_go_grpc_binary(name:str, version:str, hashes:list=None, out:str="
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/grpc/grpc-go/releases/download/cmd%2Fprotoc-gen-go-grpc%2Fv{version}/protoc-gen-go-grpc.v{version}.{os}.{arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-protoc-gen-go-grpc-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/grpc/grpc-go/releases/download/cmd%2Fprotoc-gen-go-grpc%2Fv{version}/protoc-gen-go-grpc.v{version}.{os}.{arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = ["protoc-gen-go-grpc"],
         binary = True,
-        cmd = '"$TOOL" x "$SRCS" protoc-gen-go-grpc -o tmp && mv $(find tmp -name "protoc-gen-go-grpc") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -90,20 +78,14 @@ def protoc_gen_kit_binary(name:str, version:str, hashes:list=None, out:str="", l
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/sagikazarmark/protoc-gen-kit/releases/download/v{version}/protoc-gen-kit_{os}_{arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-protoc-gen-kit-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/sagikazarmark/protoc-gen-kit/releases/download/v{version}/protoc-gen-kit_{os}_{arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = ["protoc-gen-kit"],
         binary = True,
-        cmd = '"$TOOL" x "$SRCS" protoc-gen-kit -o tmp && mv $(find tmp -name "protoc-gen-kit") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -135,7 +117,7 @@ def buf_binary(name:str, version:str=None, hashes:list=None, out:str="", labels:
     return remote_file(
         name = name,
         url = f"https://github.com/bufbuild/buf/releases/download/v{version}/buf-{download_os}-x86_64",
-        out = out or name,
+        out = out,
         binary = True,
         labels = labels,
         visibility = visibility,

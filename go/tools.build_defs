@@ -16,20 +16,14 @@ def golangci_lint_binary(name:str, version:str, hashes:list=None, out:str="", la
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/golangci/golangci-lint/releases/download/v{version}/golangci-lint-{version}-{os}-{arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-golangci-lint-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/golangci/golangci-lint/releases/download/v{version}/golangci-lint-{version}-{os}-{arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = [f"golangci-lint-{version}-{os}-{arch}/golangci-lint"],
         binary = True,
-        cmd = '"$TOOL" x "$SRCS" golangci-lint -o tmp && mv $(find tmp -name "golangci-lint") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -53,20 +47,14 @@ def gotestsum_binary(name:str, version:str, hashes:list=None, out:str="", labels
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/gotestyourself/gotestsum/releases/download/v{version}/gotestsum_{version}_{os}_{arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-gotestsum-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/gotestyourself/gotestsum/releases/download/v{version}/gotestsum_{version}_{os}_{arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = ["gotestsum"],
         binary = True,
-        cmd = '"$TOOL" x "$SRCS" gotestsum -o tmp && mv $(find tmp -name "gotestsum") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -90,20 +78,14 @@ def mga_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/sagikazarmark/mga/releases/download/v{version}/mga_{os}_{arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-mga-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/sagikazarmark/mga/releases/download/v{version}/mga_{os}_{arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = ["mga"],
         binary = True,
-        cmd = '"$TOOL" x "$SRCS" mga -o tmp && mv $(find tmp -name "mga") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -137,20 +119,14 @@ def pkger_binary(name:str, version:str, hashes:list=None, out:str="", labels:lis
         "386": "i386",
     }.get(arch, arch)
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/markbates/pkger/releases/download/v{version}/pkger_{version}_{download_os}_{download_arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-pkger-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/markbates/pkger/releases/download/v{version}/pkger_{version}_{download_os}_{download_arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = ["pkger"],
         binary = True,
-        cmd = '"$TOOL" x "$SRCS" pkger -o tmp && mv $(find tmp -name "pkger") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -174,19 +150,12 @@ def go_bindata_binary(name:str, version:str, hashes:list=None, out:str="", label
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/kevinburke/go-bindata/releases/download/v{version}/go-bindata-{os}-{arch}",
-            hashes = hashes,
-            out = f"{name}-go-bindata-{version}-{os}-{arch}",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/kevinburke/go-bindata/releases/download/v{version}/go-bindata-{os}-{arch}",
+        hashes = hashes,
+        out = out,
         binary = True,
-        cmd = 'mv "$SRCS" "$OUT"',
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -210,20 +179,14 @@ def wollemi_binary(name:str, version:str, hashes:list=None, out:str="", labels:l
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/tcncloud/wollemi/releases/download/v{version}/wollemi-v{version}-{os}-{arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-wollemi-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/tcncloud/wollemi/releases/download/v{version}/wollemi-v{version}-{os}-{arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = ["wollemi"],
         binary = True,
-        cmd = '"$TOOL" x "$SRCS" wollemi -o tmp && mv $(find tmp -name "wollemi") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,

@@ -19,7 +19,7 @@ kind_binary(
 )
 
 # https://github.com/helm/helm/releases
-CONFIG.setdefault("HELM_VERSION", "3.5.3")
+CONFIG.setdefault("HELM_VERSION", "3.5.4")
 
 helm_binary(
     name = "helm",
