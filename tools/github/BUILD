@@ -10,7 +10,7 @@ hub_binary(
 )
 
 # https://github.com/cli/cli/releases
-CONFIG.setdefault("GH_VERSION", "1.8.1")
+CONFIG.setdefault("GH_VERSION", "1.9.2")
 
 gh_binary(
     name = "gh",
