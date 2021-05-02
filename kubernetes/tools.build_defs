@@ -20,7 +20,7 @@ def kubectl_binary(name:str, version:str, hashes:list=None, out:str="", labels:l
         name = name,
         url = f"https://storage.googleapis.com/kubernetes-release/release/v{version}/bin/{os}/{arch}/kubectl",
         hashes = hashes,
-        out = out or name,
+        out = out,
         binary = True,
         labels = labels,
         visibility = visibility,
@@ -49,7 +49,7 @@ def kind_binary(name:str, version:str, hashes:list=None, out:str="", labels:list
         name = name,
         url = f"https://github.com/kubernetes-sigs/kind/releases/download/v{version}/kind-{os}-{arch}",
         hashes = hashes,
-        out = out or name,
+        out = out,
         binary = True,
         labels = labels,
         visibility = visibility,
@@ -74,20 +74,14 @@ def helm_binary(name:str, version:str, hashes:list=None, out:str="", labels:list
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://get.helm.sh/helm-v{version}-{os}-{arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-helm-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://get.helm.sh/helm-v{version}-{os}-{arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = [f"{os}-{arch}/helm"],
         binary = True,
-        cmd = '"$TOOL" x "$SRCS" helm -o tmp && mv $(find tmp -name "helm") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -120,20 +114,14 @@ def helm_docs_binary(name:str, version:str, hashes:list=None, out:str="", labels
         "amd64": "x86_64",
     }.get(arch, arch)
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/norwoodj/helm-docs/releases/download/v{version}/helm-docs_{version}_{download_os}_{download_arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-helm-docs-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/norwoodj/helm-docs/releases/download/v{version}/helm-docs_{version}_{download_os}_{download_arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = [f"helm-docs"],
         binary = True,
-        cmd = '"$TOOL" x "$SRCS" helm-docs -o tmp && mv $(find tmp -name "helm-docs") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
