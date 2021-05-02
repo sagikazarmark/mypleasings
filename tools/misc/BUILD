@@ -28,7 +28,7 @@ jq_binary(
 )
 
 # https://github.com/mikefarah/yq/releases
-CONFIG.setdefault("YQ_VERSION", "4.6.3")
+CONFIG.setdefault("YQ_VERSION", "4.7.1")
 
 yq_binary(
     name = "yq",

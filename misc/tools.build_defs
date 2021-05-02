@@ -19,20 +19,14 @@ def licensei_binary(name:str, version:str, hashes:list=None, out:str="", labels:
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/goph/licensei/releases/download/v{version}/licensei_{os}_{arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-licensei-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/goph/licensei/releases/download/v{version}/licensei_{os}_{arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = ["licensei"],
         binary = True,
-        cmd = '"$TOOL" x "$SRCS" licensei -o tmp && mv $(find tmp -name "licensei") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -56,20 +50,14 @@ def migrate_binary(name:str, version:str, hashes:list=None, out:str="", labels:l
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/golang-migrate/migrate/releases/download/v{version}/migrate.{os}-{arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-migrate-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/golang-migrate/migrate/releases/download/v{version}/migrate.{os}-{arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = [f"migrate.{os}-{arch}"],
         binary = True,
-        cmd = f'"$TOOL" x "$SRCS" migrate -o tmp && mv $(find tmp -name "migrate.{os}-{arch}") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -104,7 +92,7 @@ def jq_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[
             f"https://github.com/stedolan/jq/releases/download/jq-{version}/jq-{download_os}-amd64",
         ],
         hashes = hashes,
-        out = out or name,
+        out = out,
         binary = True,
         labels = labels,
         visibility = visibility,
@@ -143,20 +131,14 @@ def yq_binary(name:str, version:str, hashes:list=None, out:str="", labels:list=[
             test_only = test_only,
         )
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/mikefarah/yq/releases/download/v{version}/yq_{os}_{arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-yq-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/mikefarah/yq/releases/download/v{version}/yq_{os}_{arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = [f"yq_{os}_{arch}"],
         binary = True,
-        cmd = f'"$TOOL" x "$SRCS" yq -o tmp && mv $(find tmp -name "yq_{os}_{arch}") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
@@ -180,7 +162,7 @@ def semver_script(name:str, version:str, hashes:list=None, out:str="", labels:li
         name = name,
         url = f"https://raw.githubusercontent.com/fsaintjacques/semver-tool/{version}/src/semver",
         hashes = hashes,
-        out = out or name,
+        out = out,
         binary = True,
         labels = labels,
         visibility = visibility,
@@ -205,20 +187,14 @@ def fossa_binary(name:str, version:str, hashes:list=None, out:str="", labels:lis
     os = CONFIG.HOSTOS if host else CONFIG.OS
     arch = CONFIG.HOSTARCH if host else CONFIG.ARCH
 
-    return genrule(
+    return remote_file(
         name = name,
-        srcs = [remote_file(
-            name = name,
-            _tag = "download",
-            url = f"https://github.com/fossas/fossa-cli/releases/download/v{version}/fossa-cli_{version}_{os}_{arch}.tar.gz",
-            hashes = hashes,
-            out = f"{name}-fossa-{version}-{os}-{arch}.tar.gz",
-            labels = labels,
-        )],
-        outs = [out or name],
+        url = f"https://github.com/fossas/fossa-cli/releases/download/v{version}/fossa-cli_{version}_{os}_{arch}.tar.gz",
+        hashes = hashes,
+        out = out,
+        extract = True,
+        exported_files = [f"fossa"],
         binary = True,
-        cmd = f'"$TOOL" x "$SRCS" fossa -o tmp && mv $(find tmp -name "fossa") "$OUT"',
-        tools = [CONFIG.JARCAT_TOOL],
         labels = labels,
         visibility = visibility,
         test_only = test_only,
