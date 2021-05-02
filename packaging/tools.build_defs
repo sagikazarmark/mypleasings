@@ -23,7 +23,7 @@ def warp_binary(name:str, version:str, hashes:list=None, out:str="", labels:list
         name = name,
         url = f"https://github.com/dgiagio/warp/releases/download/v{version}/{download_os}-x64.warp-packer",
         hashes = hashes,
-        out = out or name,
+        out = out,
         binary = True,
         labels = labels,
         visibility = visibility,
